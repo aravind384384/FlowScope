@@ -1,0 +1,26 @@
+{
+  "name": "flowscope-ui",
+  "version": "1.0.0",
+  "description": "FlowScope session viewer (Electron desktop app)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.flowscope.ui",
+    "productName": "FlowScope",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ],
+    "mac": { "category": "public.app-category.developer-tools" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage" }
+  }
+}

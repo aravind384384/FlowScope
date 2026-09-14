@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self';" />
+  <title>FlowScope</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Top bar -->
+    <header id="topbar">
+      <div id="brand">FlowScope</div>
+      <div id="folder-controls">
+        <span id="folder-path">No folder selected</span>
+        <button id="choose-folder-btn">Choose Folder…</button>
+        <button id="rescan-btn" title="Re-scan folder">⟳</button>
+      </div>
+      <div id="search-wrap">
+        <input id="search-input" type="text" placeholder="Search sessions, tags, commands…" disabled />
+      </div>
+      <div id="sort-wrap">
+        <select id="sort-select" disabled>
+          <option value="date-desc">Newest first</option>
+          <option value="date-asc">Oldest first</option>
+          <option value="duration-desc">Longest first</option>
+          <option value="duration-asc">Shortest first</option>
+          <option value="commands-desc">Most commands</option>
+          <option value="title-asc">Title (A-Z)</option>
+        </select>
+      </div>
+    </header>
+
+    <div id="body">
+      <!-- Sidebar: date groups + tag filters -->
+      <aside id="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-heading">Library</div>
+          <div id="stats" class="sidebar-stats">
+            <div><span id="stat-sessions">0</span> sessions</div>
+            <div><span id="stat-guides">0</span> guides</div>
+            <div><span id="stat-commands">0</span> commands</div>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-heading">When</div>
+          <div id="date-filters" class="filter-list">
+            <button class="filter-chip active" data-when="all">All time</button>
+            <button class="filter-chip" data-when="today">Today</button>
+            <button class="filter-chip" data-when="week">This week</button>
+            <button class="filter-chip" data-when="older">Older</button>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-heading">Tags</div>
+          <div id="tag-filters" class="filter-list">
+            <div class="empty-hint">No tags yet</div>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <button id="favorites-toggle" class="filter-chip">★ Favorites only</button>
+        </div>
+      </aside>
+
+      <!-- Session list -->
+      <section id="session-list">
+        <div id="empty-state">
+          <p>Point FlowScope UI at the folder where your CLI writes session artifacts (e.g. <code>sessions/</code>).</p>
+          <p class="muted">This app only reads files — it never runs the CLI or modifies your session/blocks data.</p>
+          <button id="choose-folder-btn-2">Choose Folder…</button>
+        </div>
+        <div id="cards" class="cards"></div>
+      </section>
+
+      <!-- Detail workspace -->
+      <section id="workspace">
+        <div id="workspace-empty">Select a session to view it.</div>
+        <div id="workspace-content" class="hidden">
+          <div id="ws-header">
+            <div id="ws-title-row">
+              <input id="ws-title-input" type="text" placeholder="Untitled session" />
+              <button id="ws-favorite-btn" title="Toggle favorite">☆</button>
+            </div>
+            <div id="ws-meta"></div>
+            <div id="ws-tags-row">
+              <div id="ws-tags"></div>
+              <input id="ws-tag-input" type="text" placeholder="+ add tag" />
+            </div>
+          </div>
+
+          <div id="ws-tabs">
+            <button class="ws-tab active" data-tab="overview">Overview</button>
+            <button class="ws-tab" data-tab="transcript">Transcript</button>
+            <button class="ws-tab" data-tab="guide">Guide</button>
+            <button class="ws-tab" data-tab="session">Session JSON</button>
+            <button class="ws-tab" data-tab="blocks">Blocks JSON</button>
+          </div>
+
+          <div id="ws-panels">
+            <div class="ws-panel active" id="panel-overview">
+              <div id="overview-body"></div>
+              <textarea id="ws-notes" placeholder="Notes about this session…"></textarea>
+            </div>
+            <div class="ws-panel" id="panel-transcript"><pre class="artifact-empty">No transcript.md for this session.</pre></div>
+            <div class="ws-panel" id="panel-guide"><pre class="artifact-empty">No guide.md for this session.</pre></div>
+            <div class="ws-panel" id="panel-session"><pre class="artifact-empty">No session.json for this session.</pre></div>
+            <div class="ws-panel" id="panel-blocks"><pre class="artifact-empty">No blocks.json for this session.</pre></div>
+          </div>
+
+          <div id="ws-actions">
+            <button id="open-pdf-btn" disabled>Open PDF</button>
+            <button id="reveal-btn">Reveal in Folder</button>
+            <button id="delete-btn" class="danger">Delete Session…</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
