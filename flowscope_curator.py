@@ -18,7 +18,7 @@ Input:
 Output:
     curated Markdown guide
 
-The original session.json and blocks.json are never modified by the AI.
+The original session.json and blocks.json are never modified by AI.
 The curated guide is a separate artifact.
 """
 
