@@ -211,15 +211,7 @@ class Session:
 # ---------------------------------------------------------------------------
 
 def _get_size() -> tuple[int, int]:
-    """Return terminal size as (rows, columns).
-
-    Falls back to 24x80 both when the OS call fails outright (no
-    controlling terminal) and when it "succeeds" but reports a
-    degenerate 0x0 size (seen on some ptys before a size has been set,
-    e.g. under certain multiplexers/CI runners) -- a 0-column screen
-    silently breaks pyte's line reconstruction downstream instead of
-    raising, so it has to be caught here.
-    """
+    """Return terminal size as (rows, columns), with a safe fallback."""
 
     try:
         size = os.get_terminal_size()
@@ -233,112 +225,67 @@ def _get_size() -> tuple[int, int]:
         return 24, 80
 
 
-def _set_pty_size(
-    fd: int,
+def _get_shell() -> str:
+    """Return the interactive shell appropriate for the current OS."""
+
+    if sys.platform == "win32":
+        # Prefer PowerShell 7, then Windows PowerShell, then cmd.exe.
+        try:
+            import shutil
+
+            pwsh = shutil.which("pwsh.exe") or shutil.which("pwsh")
+            if pwsh:
+                return pwsh
+
+            powershell = shutil.which("powershell.exe")
+            if powershell:
+                return powershell
+
+            comspec = os.environ.get("COMSPEC")
+            if comspec:
+                return comspec
+
+        except Exception:
+            pass
+
+        return "cmd.exe"
+
+    return os.environ.get("SHELL", "/bin/bash")
+
+
+def _write_session_file(session: Session, session_path: Path) -> None:
+    """Persist a completed session using the common FlowScope format."""
+
+    session_path.write_text(
+        json.dumps(session.to_dict(), indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def _record_unix_session(
+    session: Session,
+    session_path: Path,
+    shell: str,
     rows: int,
     cols: int,
 ) -> None:
-    """Set the size of the pseudo-terminal."""
+    """Record an interactive Linux/macOS session using a real Unix PTY."""
 
-    winsize = struct.pack(
-        "HHHH",
-        rows,
-        cols,
-        0,
-        0,
-    )
-
-    fcntl.ioctl(
-        fd,
-        termios.TIOCSWINSZ,
-        winsize,
-    )
-
-
-# ---------------------------------------------------------------------------
-# Phase 1 - Recorder
-# ---------------------------------------------------------------------------
-
-def record_session(
-    sessions_dir: Path = Path("sessions"),
-    title: str | None = None,
-) -> Path:
-    """Record an interactive terminal session.
-
-    The recorder uses a real Unix PTY and stores raw input/output events.
-
-    Artifacts are organized as:
-
-        sessions_dir/
-            YYYY-MM-DD/
-                <session_name>/
-                    <session_name>.json
-                    <session_name>.blocks.json        (Phase 3)
-                    <session_name>.transcript.md       (Phase 4)
-                    <session_name>.guide.md            (Phase 5)
-                    <session_name>.guide.pdf           (Phase 6)
-
-    i.e. one self-contained folder per session, grouped under a
-    per-day folder. This keeps `sessions_dir` browsable as a session
-    library instead of a flat pile of files, and it's exactly the
-    "unlimited recursive subfolders, grouped by filename stem" layout
-    the FlowScope desktop app's folder scanner already expects -- no
-    changes needed on that side.
-
-    `session_name` is just the title's slug (e.g. "Fix Nginx Config" ->
-    "fix-nginx-config") -- no timestamp clutter. The raw title is also
-    stored in session.json. If the title can't be turned into a usable
-    slug (empty/punctuation-only), FlowScope falls back to a short
-    `session-<id>` name instead, silently. If a session with the same
-    resulting name already exists under today's folder, a numeric
-    disambiguator (`-2`, `-3`, ...) is appended so nothing overwrites.
-    """
-
-    if (
-        pty is None
-        or termios is None
-        or fcntl is None
-    ):
+    if pty is None or termios is None or fcntl is None:
         raise RuntimeError(
-            "Terminal session recording requires "
-            "a Unix operating system (Linux or macOS)."
+            "Unix terminal support is unavailable. "
+            "FlowScope needs Python's pty/termios/fcntl modules on Linux/macOS."
         )
-
-    session_id = str(uuid.uuid4())
-
-    started_dt = datetime.now(
-        timezone.utc
-    )
-
-    date_str = started_dt.strftime(
-        "%Y-%m-%d"
-    )
-
-    title = title or ""
-    slug = _slugify(title)
-
-    base_name = slug or f"session-{session_id[:8]}"
-
-    session_dir, session_name = _unique_session_dir(
-        sessions_dir / date_str, base_name
-    )
-
-    session_dir.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    session_path = session_dir / f"{session_name}.json"
-
-    shell = os.environ.get(
-        "SHELL",
-        "/bin/bash",
-    )
 
     is_tty = sys.stdin.isatty()
 
-    stdin_fd = sys.stdin.fileno()
-    stdout_fd = sys.stdout.fileno()
+    try:
+        stdin_fd = sys.stdin.fileno()
+        stdout_fd = sys.stdout.fileno()
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(
+            "FlowScope recording requires an interactive terminal."
+        ) from exc
 
     old_settings = (
         termios.tcgetattr(stdin_fd)
@@ -346,68 +293,41 @@ def record_session(
         else None
     )
 
-    rows, cols = _get_size()
-
-    session = Session(
-        session_id=session_id,
-        started_at=started_dt.isoformat(),
-        shell=shell,
-        columns=cols,
-        title=title,
-    )
-
     # Create a real PTY and fork the shell.
     pid, master_fd = pty.fork()
 
     if pid == 0:
-        # Child process:
-        # pty.fork() attaches the slave PTY as the controlling terminal.
-
-        os.execvp(
-            shell,
-            [shell],
-        )
-
+        # Child process: pty.fork() attaches the slave PTY as the
+        # controlling terminal.
+        os.execvp(shell, [shell])
         os._exit(1)
 
-    # Parent process:
-    # relay bytes between the real terminal and the PTY master.
-
-    _set_pty_size(
-        master_fd,
-        rows,
-        cols,
-    )
+    # Parent process: relay bytes between the real terminal and the PTY.
+    _set_unix_pty_size(master_fd, rows, cols)
 
     if is_tty:
-        # Put the *real* terminal into raw mode so every keystroke goes
-        # straight through to the PTY (no local line-editing/echo -- the
-        # shell inside the PTY handles that itself, exactly like a normal
-        # terminal session).
+        # Put the real terminal into raw mode so every keystroke goes
+        # straight through to the shell running inside the PTY.
         import tty
 
         tty.setraw(stdin_fd)
 
     def _handle_winch(signum, frame) -> None:
-        """Propagate real terminal resizes to the PTY."""
+        """Propagate real terminal resizes to the child PTY."""
 
         try:
             new_rows, new_cols = _get_size()
-            _set_pty_size(master_fd, new_rows, new_cols)
+            _set_unix_pty_size(master_fd, new_rows, new_cols)
         except OSError:
             pass
 
     have_winch = hasattr(signal, "SIGWINCH")
-
     old_winch_handler = (
         signal.signal(signal.SIGWINCH, _handle_winch)
         if have_winch
         else None
     )
 
-    # Bytes from the PTY can split a multi-byte UTF-8 character across
-    # reads; incremental decoders keep the partial bytes around instead
-    # of corrupting/dropping the character.
     input_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
     output_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
 
@@ -426,7 +346,6 @@ def record_session(
                     0.25,
                 )
             except InterruptedError:
-                # Interrupted by a signal (e.g. SIGWINCH) -- just retry.
                 continue
             except OSError as exc:
                 if exc.errno == errno.EINTR:
@@ -437,21 +356,18 @@ def record_session(
                 try:
                     data = os.read(master_fd, READ_CHUNK)
                 except OSError as exc:
-                    # EIO on Linux typically means the slave side (and
-                    # thus the shell) has gone away.
+                    # EIO on Linux typically means the slave side has gone away.
                     if exc.errno == errno.EIO:
                         data = b""
                     else:
                         raise
 
                 if not data:
-                    # The shell exited; nothing left to relay.
                     break
 
                 os.write(stdout_fd, data)
 
                 text = output_decoder.decode(data)
-
                 if text:
                     session.events.append(
                         Event(
@@ -471,7 +387,6 @@ def record_session(
                     os.write(master_fd, data)
 
                     text = input_decoder.decode(data)
-
                     if text:
                         session.events.append(
                             Event(
@@ -481,8 +396,7 @@ def record_session(
                             )
                         )
 
-            # Reap the child without blocking so we notice a shell exit
-            # even if it happens to close its PTY cleanly (no EIO/EOF).
+            # Reap the child without blocking so we notice a shell exit.
             try:
                 waited_pid, _status = os.waitpid(pid, os.WNOHANG)
             except ChildProcessError:
@@ -490,6 +404,7 @@ def record_session(
 
             if waited_pid == pid:
                 break
+
     finally:
         if have_winch and old_winch_handler is not None:
             signal.signal(signal.SIGWINCH, old_winch_handler)
@@ -506,15 +421,313 @@ def record_session(
         except OSError:
             pass
 
-    ended_dt = datetime.now(timezone.utc)
 
-    session.ended_at = ended_dt.isoformat()
-    session.duration = (ended_dt - started_dt).total_seconds()
+def _set_unix_pty_size(fd: int, rows: int, cols: int) -> None:
+    """Set the size of a Unix pseudo-terminal."""
 
-    session_path.write_text(
-        json.dumps(session.to_dict(), indent=2, ensure_ascii=False),
-        encoding="utf-8",
+    winsize = struct.pack("HHHH", rows, cols, 0, 0)
+
+    fcntl.ioctl(
+        fd,
+        termios.TIOCSWINSZ,
+        winsize,
     )
+
+
+def _windows_key_to_text(first: str) -> str:
+    """Convert a Windows console key returned by msvcrt.getwch().
+
+    Normal characters and control characters are returned unchanged.
+    Extended keys are translated to the ANSI escape sequences expected by
+    terminal applications running inside ConPTY.
+    """
+
+    # msvcrt returns NUL/E0 followed by a scan-code for extended keys.
+    if first not in ("\x00", "\xe0"):
+        return first
+
+    import msvcrt
+
+    second = msvcrt.getwch()
+
+    extended = {
+        # Arrow keys
+        "H": "\x1b[A",  # Up
+        "P": "\x1b[B",  # Down
+        "M": "\x1b[C",  # Right
+        "K": "\x1b[D",  # Left
+        # Navigation
+        "G": "\x1b[H",  # Home
+        "O": "\x1b[F",  # End
+        "R": "\x1b[2~",  # Insert
+        "S": "\x1b[3~",  # Delete
+        "I": "\x1b[5~",  # Page Up
+        "Q": "\x1b[6~",  # Page Down
+        # Function keys (common console scan codes)
+        ";": "\x1bOP",   # F1
+        "<": "\x1bOQ",   # F2
+        "=": "\x1bOR",   # F3
+        ">": "\x1bOS",   # F4
+        "?": "\x1b[15~", # F5
+        "@": "\x1b[17~", # F6
+        "A": "\x1b[18~", # F7
+        "B": "\x1b[19~", # F8
+        "C": "\x1b[20~", # F9
+        "D": "\x1b[21~", # F10
+        "E": "\x1b[23~", # F11
+        "F": "\x1b[24~", # F12
+    }
+
+    return extended.get(second, "")
+
+
+def _record_windows_session(
+    session: Session,
+    session_path: Path,
+    shell: str,
+    rows: int,
+    cols: int,
+) -> None:
+    """Record a native Windows session through ConPTY/pywinpty.
+
+    pywinpty provides a Windows pseudo-terminal instead of falling back to
+    ordinary subprocess pipes. This keeps interactive shell behavior close
+    to the Unix PTY implementation while preserving the same FlowScope
+    input/output event format.
+    """
+
+    try:
+        from winpty import PtyProcess
+    except ImportError as exc:
+        raise RuntimeError(
+            "Windows terminal recording requires pywinpty. "
+            "Install it with: pip install pywinpty"
+        ) from exc
+
+    if not sys.stdin.isatty():
+        raise RuntimeError(
+            "FlowScope recording requires an interactive Windows terminal."
+        )
+
+    try:
+        proc = PtyProcess.spawn(
+            shell,
+            dimensions=(rows, cols),
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            f"Could not start Windows shell through ConPTY: {exc}"
+        ) from exc
+
+    console.print(
+        "[dim]FlowScope is recording this Windows session. "
+        "Exit the shell (e.g. `exit`) to stop.[/dim]"
+    )
+
+    import msvcrt
+    import threading
+
+    stop_input = threading.Event()
+    input_error: list[BaseException] = []
+
+    def _input_worker() -> None:
+        """Read Windows console keys and forward them to ConPTY."""
+
+        try:
+            while not stop_input.is_set() and proc.isalive():
+                key = msvcrt.getwch()
+                if stop_input.is_set():
+                    break
+
+                text = _windows_key_to_text(key)
+                if not text:
+                    continue
+
+                # Record exactly what FlowScope sends into the PTY.
+                session.events.append(
+                    Event(
+                        time=datetime.now(timezone.utc).isoformat(),
+                        type="input",
+                        text=text,
+                    )
+                )
+
+                proc.write(text)
+
+        except (EOFError, OSError) as exc:
+            if not stop_input.is_set():
+                input_error.append(exc)
+        except Exception as exc:
+            if not stop_input.is_set():
+                input_error.append(exc)
+
+    input_thread = threading.Thread(
+        target=_input_worker,
+        name="flowscope-windows-input",
+        daemon=True,
+    )
+    input_thread.start()
+
+    last_rows, last_cols = rows, cols
+
+    try:
+        while proc.isalive():
+            # pywinpty's read() returns text rather than raw bytes. It still
+            # preserves the terminal escape sequences emitted by ConPTY.
+            try:
+                text = proc.read(
+                    READ_CHUNK,
+                    timeout=0.05,
+                )
+            except TypeError:
+                # Compatibility with pywinpty versions whose read() accepts
+                # only the byte/character count.
+                text = proc.read(READ_CHUNK)
+            except EOFError:
+                text = ""
+
+            if text:
+                # The terminal may be resized while the session is running.
+                try:
+                    new_rows, new_cols = _get_size()
+                    if (new_rows, new_cols) != (last_rows, last_cols):
+                        proc.setwinsize(new_rows, new_cols)
+                        last_rows, last_cols = new_rows, new_cols
+                except Exception:
+                    # Resizing is best-effort; it must never stop recording.
+                    pass
+
+                sys.stdout.write(text)
+                sys.stdout.flush()
+
+                session.events.append(
+                    Event(
+                        time=datetime.now(timezone.utc).isoformat(),
+                        type="output",
+                        text=text,
+                    )
+                )
+            else:
+                # Give the input thread time to process keystrokes while
+                # avoiding a busy loop when the shell is quiet.
+                time.sleep(0.01)
+
+            if input_error:
+                raise RuntimeError(
+                    f"Windows console input failed: {input_error[0]}"
+                )
+
+    finally:
+        stop_input.set()
+
+        # If the shell is still alive, terminate it. Normally it has already
+        # exited because the user typed `exit`.
+        try:
+            if proc.isalive():
+                proc.terminate()
+        except Exception:
+            pass
+
+        # The input worker may be blocked in getwch(); it is a daemon thread,
+        # so it will not prevent FlowScope from exiting.
+        input_thread.join(timeout=0.2)
+
+        try:
+            proc.close()
+        except Exception:
+            pass
+
+
+def record_session(
+    sessions_dir: Path = Path("sessions"),
+    title: str | None = None,
+) -> Path:
+    """Record an interactive terminal session on Linux, macOS, or Windows.
+
+    Phase 1 is platform-specific, but every platform produces the same
+    session.json schema. Phases 2-6 therefore remain completely
+    platform-independent.
+
+    On Linux/macOS FlowScope uses Python's real Unix PTY implementation.
+    On Windows FlowScope uses ConPTY through pywinpty.
+
+    Artifacts are organized as:
+
+        sessions_dir/
+            YYYY-MM-DD/
+                <session_name>/
+                    <session_name>.json
+                    <session_name>.blocks.json        (Phase 3)
+                    <session_name>.transcript.md       (Phase 4)
+                    <session_name>.guide.md            (Phase 5)
+                    <session_name>.guide.pdf            (Phase 6)
+
+    `session_name` is the title's slug. If the title cannot be converted to
+    a usable slug, FlowScope falls back to `session-<id>`. Existing names are
+    disambiguated with -2, -3, etc. so no session is overwritten.
+    """
+
+    session_id = str(uuid.uuid4())
+
+    started_dt = datetime.now(timezone.utc)
+
+    date_str = started_dt.strftime("%Y-%m-%d")
+
+    title = title or ""
+    slug = _slugify(title)
+    base_name = slug or f"session-{session_id[:8]}"
+
+    day_dir = sessions_dir / date_str
+    session_dir, session_name = _unique_session_dir(
+        day_dir,
+        base_name,
+    )
+
+    session_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    session_path = session_dir / f"{session_name}.json"
+
+    shell = _get_shell()
+    rows, cols = _get_size()
+
+    session = Session(
+        session_id=session_id,
+        started_at=started_dt.isoformat(),
+        shell=shell,
+        columns=cols,
+        title=title,
+    )
+
+    try:
+        if sys.platform == "win32":
+            _record_windows_session(
+                session=session,
+                session_path=session_path,
+                shell=shell,
+                rows=rows,
+                cols=cols,
+            )
+        else:
+            _record_unix_session(
+                session=session,
+                session_path=session_path,
+                shell=shell,
+                rows=rows,
+                cols=cols,
+            )
+
+    except KeyboardInterrupt:
+        # Keep the session useful even if FlowScope itself is interrupted.
+        console.print("\n[yellow]Recording interrupted.[/yellow]")
+
+    finally:
+        ended_dt = datetime.now(timezone.utc)
+        session.ended_at = ended_dt.isoformat()
+        session.duration = (ended_dt - started_dt).total_seconds()
+        _write_session_file(session, session_path)
 
     return session_path
 
