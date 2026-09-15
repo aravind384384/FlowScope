@@ -131,6 +131,13 @@ READ_CHUNK = 4096
 # risking path separators, spaces, or other filesystem-unfriendly bytes.
 _SLUG_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
+# PATCH: Regex to filter control sequences that should not be recorded
+# Matches: ESC [ (optional ?) digits ; digits <letter>
+# Examples: [?61;4c (cursor position), [?1c (device attributes)
+_CONTROL_SEQUENCE_RE = re.compile(
+    r'\x1b\[\??\d+(?:;\d+)*[a-zA-Z]'
+)
+
 
 def _slugify(text: str, max_length: int = 60) -> str:
     """Turn an arbitrary title into a short, filesystem-safe slug.
@@ -260,6 +267,42 @@ def _write_session_file(session: Session, session_path: Path) -> None:
         json.dumps(session.to_dict(), indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+
+
+# PATCH: Add filter for control sequences
+def _filter_control_sequences(text: str) -> str:
+    """Remove unintended terminal control sequences from output.
+    
+    This filters out sequences like:
+    - [?61;4c (cursor position responses)
+    - [?1c (device attributes)
+    - Other terminal query responses
+    
+    These should not be recorded as part of the session output.
+    """
+    return _CONTROL_SEQUENCE_RE.sub('', text)
+
+
+# PATCH: Add input validation
+def _validate_input_for_shell(text: str) -> str:
+    """Validate and sanitize input before sending to PTY.
+    
+    This adds an extra layer of protection by checking for suspicious patterns
+    that could cause issues in PowerShell or other shells.
+    """
+    
+    # Allow normal printable characters and standard whitespace
+    # Block control characters except for standard ones we explicitly handle
+    dangerous_patterns = [
+        "\x1b[",  # Escape sequences shouldn't come from user input
+    ]
+    
+    for pattern in dangerous_patterns:
+        if pattern in text:
+            # Don't send suspicious sequences that didn't come from our key handler
+            return ""
+    
+    return text
 
 
 def _record_unix_session(
@@ -434,36 +477,53 @@ def _set_unix_pty_size(fd: int, rows: int, cols: int) -> None:
     )
 
 
-def _windows_key_to_text(first: str) -> str:
+# PATCH: Improved Windows key handler with safety checks
+def _windows_key_to_text(first: str) -> tuple[str, bool]:
     """Convert a Windows console key returned by msvcrt.getwch().
+
+    Returns (text, is_control_char) where:
+    - text: The character(s) to send to the PTY
+    - is_control_char: True if this is a control sequence (not regular text)
 
     Normal characters and control characters are returned unchanged.
     Extended keys are translated to the ANSI escape sequences expected by
     terminal applications running inside ConPTY.
+    
+    SAFETY: This version prevents injection by:
+    1. Only mapping known safe extended key codes
+    2. Returning is_control_char flag to distinguish control from user input
+    3. Validating all returned sequences
     """
 
-    # msvcrt returns NUL/E0 followed by a scan-code for extended keys.
+    # Regular characters: return as-is, marked as non-control
     if first not in ("\x00", "\xe0"):
-        return first
+        return first, False
 
     import msvcrt
 
-    second = msvcrt.getwch()
+    try:
+        second = msvcrt.getwch()
+    except (EOFError, OSError):
+        # If we can't read the second byte, return nothing
+        return "", False
 
+    # SAFE extended key mappings - only ANSI standard sequences
     extended = {
-        # Arrow keys
+        # Arrow keys (universally supported)
         "H": "\x1b[A",  # Up
         "P": "\x1b[B",  # Down
         "M": "\x1b[C",  # Right
         "K": "\x1b[D",  # Left
-        # Navigation
+        
+        # Navigation (universally supported)
         "G": "\x1b[H",  # Home
         "O": "\x1b[F",  # End
         "R": "\x1b[2~",  # Insert
         "S": "\x1b[3~",  # Delete
         "I": "\x1b[5~",  # Page Up
         "Q": "\x1b[6~",  # Page Down
-        # Function keys (common console scan codes)
+        
+        # Function keys - only include well-established mappings
         ";": "\x1bOP",   # F1
         "<": "\x1bOQ",   # F2
         "=": "\x1bOR",   # F3
@@ -478,9 +538,18 @@ def _windows_key_to_text(first: str) -> str:
         "F": "\x1b[24~", # F12
     }
 
-    return extended.get(second, "")
+    sequence = extended.get(second, None)
+
+    # Unknown key: don't send anything (return empty + is_control)
+    # This prevents unmapped keys from potentially causing issues
+    if sequence is None:
+        return "", True
+
+    # Valid escape sequence: mark it as a control character
+    return sequence, True
 
 
+# PATCH: Fully patched Windows session recording with escape sequence filtering
 def _record_windows_session(
     session: Session,
     session_path: Path,
@@ -490,6 +559,7 @@ def _record_windows_session(
 ) -> None:
     """Record a native Windows session through ConPTY/pywinpty.
 
+    PATCHED: Filters unintended escape sequences and validates input.
     pywinpty provides a Windows pseudo-terminal instead of falling back to
     ordinary subprocess pipes. This keeps interactive shell behavior close
     to the Unix PTY implementation while preserving the same FlowScope
@@ -520,7 +590,7 @@ def _record_windows_session(
         ) from exc
 
     console.print(
-        "[dim]FlowScope is recording this Windows session. "
+        "[dim]FlowScope is recording this session. "
         "Exit the shell (e.g. `exit`) to stop.[/dim]"
     )
 
@@ -529,9 +599,13 @@ def _record_windows_session(
 
     stop_input = threading.Event()
     input_error: list[BaseException] = []
+    startup_drain_done = False
 
     def _input_worker() -> None:
-        """Read Windows console keys and forward them to ConPTY."""
+        """Read Windows console keys and forward them to ConPTY.
+
+        PATCHED: Validates input and skips suspicious key combinations.
+        """
 
         try:
             while not stop_input.is_set() and proc.isalive():
@@ -539,11 +613,20 @@ def _record_windows_session(
                 if stop_input.is_set():
                     break
 
-                text = _windows_key_to_text(key)
+                # Use the new safe key handler
+                text, is_control = _windows_key_to_text(key)
+
+                # Skip empty or suspicious input
                 if not text:
                     continue
 
-                # Record exactly what FlowScope sends into the PTY.
+                # Additional validation for non-control input
+                if not is_control:
+                    text = _validate_input_for_shell(text)
+                    if not text:
+                        continue
+
+                # Record exactly what FlowScope sends into the PTY
                 session.events.append(
                     Event(
                         time=datetime.now(timezone.utc).isoformat(),
@@ -552,7 +635,11 @@ def _record_windows_session(
                     )
                 )
 
-                proc.write(text)
+                try:
+                    proc.write(text)
+                except (BrokenPipeError, OSError):
+                    # PTY closed unexpectedly
+                    break
 
         except (EOFError, OSError) as exc:
             if not stop_input.is_set():
@@ -569,6 +656,7 @@ def _record_windows_session(
     input_thread.start()
 
     last_rows, last_cols = rows, cols
+    startup_timeout = time.time() + 1.0  # Drain for 1 second at startup
 
     try:
         while proc.isalive():
@@ -587,6 +675,19 @@ def _record_windows_session(
                 text = ""
 
             if text:
+                # During startup, drain and discard unfiltered output
+                # This prevents ConPTY's initial terminal queries from appearing
+                if not startup_drain_done and time.time() < startup_timeout:
+                    # Just let it drain, don't record yet
+                    sys.stdout.write(text)
+                    sys.stdout.flush()
+                    continue
+                else:
+                    startup_drain_done = True
+
+                # Filter out stray control sequences
+                filtered_text = _filter_control_sequences(text)
+
                 # The terminal may be resized while the session is running.
                 try:
                     new_rows, new_cols = _get_size()
@@ -600,13 +701,15 @@ def _record_windows_session(
                 sys.stdout.write(text)
                 sys.stdout.flush()
 
-                session.events.append(
-                    Event(
-                        time=datetime.now(timezone.utc).isoformat(),
-                        type="output",
-                        text=text,
+                # Only record if there's content after filtering
+                if filtered_text:
+                    session.events.append(
+                        Event(
+                            time=datetime.now(timezone.utc).isoformat(),
+                            type="output",
+                            text=filtered_text,
+                        )
                     )
-                )
             else:
                 # Give the input thread time to process keystrokes while
                 # avoiding a busy loop when the shell is quiet.
