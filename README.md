@@ -1,29 +1,26 @@
-# FlowScope
+FlowScope
 
-### Capture. Reconstruct. Understand.
+Capture. Reconstruct. Understand.
 
-**FlowScope** is a terminal-session capture and reconstruction tool with an optional **AI-powered documentation pipeline**.
+FlowScope is a terminal-session capture and reconstruction tool with an optional AI-powered documentation pipeline.
 
-It launches a shell inside a real Unix **pseudo-terminal (PTY)**, captures terminal input/output at the PTY level, reconstructs the session, and transforms it into clean, human-readable documentation.
+It records terminal sessions, reconstructs the useful terminal activity, detects command and interaction blocks, and transforms the session into clean, human-readable documentation.
 
-Unlike conventional command-history loggers, FlowScope can correctly handle interactive and full-screen terminal applications such as `vim`, `top`, and `less`.
+FlowScope supports Linux, macOS, and Windows. On Unix-like systems it uses the native PTY-based recording approach. On Windows, the recorder uses Windows-compatible process/console handling so the same downstream FlowScope pipeline can be used without requiring WSL.
 
----
-
-## ✨ What FlowScope Does
+✨ What FlowScope Does
 
 FlowScope turns a messy terminal session into structured documentation:
 
-```text
 Terminal Session
        │
        ▼
 ┌─────────────────┐
-│    Recorder     │  Capture raw PTY events
+│    Recorder     │  Capture terminal input/output
 └────────┬────────┘
          ▼
 ┌─────────────────┐
-│     Parser      │  Reconstruct terminal state
+│     Parser      │  Reconstruct terminal data
 └────────┬────────┘
          ▼
 ┌─────────────────┐
@@ -41,338 +38,392 @@ Terminal Session
 ┌─────────────────┐
 │   PDF Export    │  Generate printable guide
 └─────────────────┘
-```
 
-### Example
+Example
 
 A raw debugging session might contain:
 
-```text
 $ systemctl status nginx
 ...
+
 $ vim /etc/nginx/nginx.conf
 ...
+
 $ systemctl restart nginx
 ...
-```
 
 FlowScope can turn that session into a structured guide such as:
 
-> **Fixing an Nginx Configuration**
->
-> 1. Open the Nginx configuration file.
-> 2. Correct the configuration.
-> 3. Restart the Nginx service.
-> 4. Verify that the service is running correctly.
+Fixing an Nginx Configuration
 
-The goal is to preserve **what actually happened** while removing the noise of an interactive terminal session.
+Open the Nginx configuration file.
 
----
+Correct the configuration.
 
-## 🚀 Key Features
+Restart the Nginx service.
 
-* 🖥️ **PTY-level recording** — captures real terminal interaction rather than relying on shell history.
-* 🔄 **Terminal reconstruction** — uses `pyte` to reproduce cursor movement, overwrites, and ANSI escape sequences.
-* 🧠 **Command-block detection** — groups related terminal activity into meaningful blocks.
-* ⌨️ **Interactive session support** — handles applications such as `vim`, `top`, and `less` without treating every screen update as a separate command.
-* 📝 **Deterministic transcripts** — converts sessions into clean Markdown transcripts.
-* 🤖 **AI-powered curation** — optionally uses Gemini to transform raw sessions into concise technical guides.
-* 📄 **PDF generation** — converts curated guides into printable PDF documents.
-* 📁 **Date-based session organization** — keeps recorded sessions organized automatically.
+Verify that the service is running correctly.
 
----
+The goal is to preserve what actually happened while removing the noise of an interactive terminal session.
 
-## 🏗️ Architecture
+🚀 Key Features
 
-| Component             | File                      | Responsibility                                       |
-| --------------------- | ------------------------- | ---------------------------------------------------- |
-| **Recorder**          | `flowscope.py`            | Starts the PTY shell and records raw terminal events |
-| **Parser**            | `flowscope_parser.py`     | Reconstructs terminal output using `pyte`            |
-| **Heuristics**        | `flowscope_heuristics.py` | Identifies command blocks and interactive sessions   |
-| **Markdown Exporter** | `flowscope_markdown.py`   | Produces clean session transcripts                   |
-| **AI Curator**        | `flowscope_curator.py`    | Generates focused technical guides using Gemini      |
-| **PDF Exporter**      | `flowscope_pdf.py`        | Converts guides into PDF documents                   |
+🖥️ Cross-platform recording — supports Linux, macOS, and Windows.
 
----
+🖥️ Terminal-level recording — captures real terminal interaction rather than relying only on shell history.
 
-## 🔄 Processing Pipeline
+🔄 Terminal reconstruction — uses pyte on the Unix PTY path to reproduce cursor movement, overwrites, and ANSI escape sequences.
 
-| Stage              | Output                       | Description                                            |
-| ------------------ | ---------------------------- | ------------------------------------------------------ |
-| **1. Recording**   | `session.json`               | Raw PTY input/output events                            |
-| **2. Parsing**     | Reconstructed terminal lines | Resolves cursor movement, overwrites, and escape codes |
-| **3. Heuristics**  | `*.blocks.json`              | Groups terminal activity into logical blocks           |
-| **4. Markdown**    | `*.transcript.md`            | Generates a deterministic transcript                   |
-| **5. AI Curation** | `*.guide.md`                 | Produces a streamlined technical guide                 |
-| **6. PDF**         | `*.guide.pdf`                | Creates a printable PDF                                |
+🪟 Windows compatibility — records Windows terminal sessions without requiring WSL.
 
----
+🧠 Command-block detection — groups related terminal activity into meaningful blocks.
 
-# 💻 Requirements
+⌨️ Interactive session support — preserves terminal interactions and screen-oriented activity where supported by the recorder.
 
-### Operating System
+📝 Deterministic transcripts — converts sessions into clean Markdown transcripts.
 
-FlowScope currently requires a Unix-like environment:
+🤖 AI-powered curation — optionally uses Gemini to transform raw sessions into concise technical guides.
 
-* **Linux** ✅
-* **macOS** ✅
-* **Windows** ❌
+📄 PDF generation — converts curated guides into printable PDF documents.
 
-Windows is not currently supported because the recorder relies on Unix-specific modules including:
+📁 Date-based session organization — keeps recorded sessions organized automatically.
 
-* `pty`
-* `termios`
-* `fcntl`
+🏗️ Architecture
 
-### Python
+Component
 
-* Python **3.x**
+File
 
----
+Responsibility
 
-# 📦 Installation
+Recorder
 
-### 1. Clone the repository
+flowscope.py
 
-```bash
+Starts the shell and records raw terminal events
+
+Parser
+
+flowscope_parser.py
+
+Reconstructs terminal data and normalizes recorded output
+
+Heuristics
+
+flowscope_heuristics.py
+
+Identifies command blocks and interactive sessions
+
+Markdown Exporter
+
+flowscope_markdown.py
+
+Produces clean session transcripts
+
+AI Curator
+
+flowscope_curator.py
+
+Generates focused technical guides using Gemini
+
+PDF Exporter
+
+flowscope_pdf.py
+
+Converts guides into PDF documents
+
+🔄 Processing Pipeline
+
+Stage
+
+Output
+
+Description
+
+1. Recording
+
+session.json
+
+Raw terminal input/output events
+
+2. Parsing
+
+Reconstructed terminal lines
+
+Normalizes and reconstructs terminal data
+
+3. Heuristics
+
+*.blocks.json
+
+Groups terminal activity into logical blocks
+
+4. Markdown
+
+*.transcript.md
+
+Generates a deterministic transcript
+
+5. AI Curation
+
+*.guide.md
+
+Produces a streamlined technical guide
+
+6. PDF
+
+*.guide.pdf
+
+Creates a printable PDF
+
+A key design goal is that platform-specific recording differences are handled in the Recorder and Parser layers, while the downstream heuristics, Markdown, AI, and PDF stages remain platform-independent.
+
+💻 Requirements
+
+Operating System
+
+FlowScope supports:
+
+Linux ✅
+
+macOS ✅
+
+Windows ✅
+
+Windows
+
+Windows recording is implemented using Windows-compatible process/console handling rather than the Unix-only modules used by the Unix recorder.
+
+WSL is not required.
+
+The Windows environment may use the pywinpty dependency included in requirements.txt for Windows terminal/process support.
+
+Python
+
+Python 3.x
+
+📦 Installation
+
+1. Clone the repository
+
 git clone <repository-url>
 cd FlowScope
-```
 
-### 2. Create a virtual environment
+2. Create a virtual environment
 
-```bash
+Linux / macOS
+
 python3 -m venv .venv
 source .venv/bin/activate
-```
 
-### 3. Install dependencies
+Windows PowerShell
 
-```bash
+python -m venv prj
+.\prj\Scripts\Activate.ps1
+
+If PowerShell blocks script execution for the current session, run:
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\prj\Scripts\Activate.ps1
+
+3. Install dependencies
+
+The project dependencies are listed in requirements.txt.
+
 python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
-python -m pip install \
-    typer \
-    rich \
-    pyte \
-    reportlab \
-    python-dotenv \
-    google-genai
-```
+On Windows, this installs the Windows-specific dependency:
 
----
+pywinpty==3.0.5
 
-# 🔑 Gemini API Configuration
+🔑 Gemini API Configuration
 
 AI curation is optional.
 
-If you want to use the Gemini-powered documentation pipeline, configure your API key:
+If you want to use the Gemini-powered documentation pipeline, configure your API key.
 
-```bash
+Linux / macOS
+
 export GEMINI_API_KEY="your_gemini_api_key"
-```
 
-`python-dotenv` can also be used to load the key from a `.env` file.
+Windows PowerShell
 
-> **Tip:** Never commit your API key or `.env` file to Git.
+$env:GEMINI_API_KEY="your_gemini_api_key"
 
----
+python-dotenv can also be used to load the key from a .env file.
 
-# 🚀 Quick Start
+Tip: Never commit your API key or .env file to Git.
 
-## 1. Record a terminal session
+🚀 Quick Start
+
+1. Record a terminal session
 
 Start FlowScope:
 
-```bash
 flowscope record --title "Fix Nginx Config"
-```
 
 Work normally inside the recorded shell.
 
 When you're finished:
 
-```bash
 exit
-```
 
 or press:
 
-```text
 Ctrl-D
-```
 
-FlowScope automatically stores the session under a date-based directory:
+The recorded session is automatically stored under a date-based directory.
 
-```text
+Example:
+
 sessions/
-└── 2026-09-09/
+└── 2026-09-17/
     └── fix-nginx-config/
         ├── fix-nginx-config.json
         ├── fix-nginx-config.blocks.json
         ├── fix-nginx-config.transcript.md
         ├── fix-nginx-config.guide.md
         └── fix-nginx-config.guide.pdf
-```
 
----
+The exact files produced depend on the commands/options used during processing.
 
-## 2. Record Without AI
+2. Windows Example
+
+After activating the virtual environment on Windows:
+
+flowscope record --title "Windows Test"
+
+FlowScope records the Windows shell session and stores the resulting session data in the normal sessions/ directory structure.
+
+No WSL installation is required for the Windows recording workflow.
+
+3. Record Without AI
 
 If you only want to capture and process the terminal session without making external AI calls:
 
-```bash
 flowscope record \
     --no-guide \
     --title "Fix Nginx Config"
-```
 
 This is the recommended option when recording sessions that may contain sensitive information.
 
----
-
-# 🤖 Generate an AI Guide
+🤖 Generate an AI Guide
 
 You can generate a guide from a previously recorded session:
 
-```bash
 flowscope guide \
-    sessions/2026-09-09/fix-nginx-config/fix-nginx-config.json \
+    sessions/2026-09-17/fix-nginx-config/fix-nginx-config.json \
     --focus "Document the final working configuration and remove failed attempts"
-```
 
-The `--focus` option lets you tell the curator what information matters most.
+The --focus option lets you tell the curator what information matters most.
 
 For example:
 
-```bash
 --focus "Create a step-by-step troubleshooting guide"
-```
 
 or:
 
-```bash
 --focus "Keep only the commands that solved the problem"
-```
 
----
+🧠 Curate Existing Block Data
 
-# 🧠 Curate Existing Block Data
+If you already have a blocks.json file, you can run the AI curation step directly:
 
-If you already have a `blocks.json` file, you can run the AI curation step directly:
-
-```bash
 flowscope curate \
-    sessions/2026-09-09/fix-nginx-config/fix-nginx-config.blocks.json \
+    sessions/2026-09-17/fix-nginx-config/fix-nginx-config.blocks.json \
     --out guide.md
-```
 
 This is useful when you want to regenerate documentation without recording the session again.
 
----
+🛠️ CLI Reference
 
-# 🛠️ CLI Reference
+Show available commands
 
-### Show available commands
-
-```bash
 flowscope --help
-```
 
-### Record a session
+Record a session
 
-```bash
 flowscope record --title "My Session"
-```
 
-### Specify an output directory
+Specify an output directory
 
-```bash
 flowscope record --dir ./my-sessions
-```
 
-### Generate a guide
+Generate a guide
 
-```bash
 flowscope guide <session.json>
-```
 
-### Provide a custom focus
+Provide a custom focus
 
-```bash
 flowscope guide <session.json> \
     -f "Create a step-by-step runbook"
-```
 
-### Curate existing blocks
+Curate existing blocks
 
-```bash
 flowscope curate <blocks.json> --out guide.md
-```
 
-### Specify a Gemini model
+Specify a Gemini model
 
-```bash
 flowscope record --model gemini-3.6-flash
-```
 
----
+🔒 Security & Privacy
 
-# 🔒 Security & Privacy
+⚠️ Important: FlowScope records raw terminal input and output.
 
-> **⚠️ Important: FlowScope records raw terminal input and output.**
+Because FlowScope operates at the terminal interaction level, recorded sessions may contain sensitive information such as:
 
-Because FlowScope operates at the PTY level, recorded sessions may contain sensitive information such as:
+Passwords
 
-* Passwords
-* API keys
-* Authentication tokens
-* Environment variables
-* Private configuration files
-* Editor contents from `vim` or `nano`
-* Commands containing secrets
-* Full-screen application buffers
+API keys
+
+Authentication tokens
+
+Environment variables
+
+Private configuration files
+
+Editor contents from vim or nano
+
+Commands containing secrets
+
+Full-screen application buffers
 
 These may be stored in:
 
-```text
 session.json
 blocks.json
-```
 
-### Before using AI curation
+Before using AI curation
 
-**Always inspect your recorded files for sensitive information before sending them to an external AI service.**
+Always inspect your recorded files for sensitive information before sending them to an external AI service.
 
 In particular, pay attention to:
 
-```text
 block_type: "interactive"
-```
 
-Interactive blocks may contain complete, verbatim terminal buffer contents.
+Interactive blocks may contain complete or detailed terminal buffer contents.
 
-### Recommended practices
+Recommended practices
 
-* Use test or disposable credentials when possible.
-* Review `session.json` before sharing it.
-* Review `blocks.json` before AI processing.
-* Never commit recorded sessions containing secrets to Git.
-* Add sensitive session directories to `.gitignore` when appropriate.
+Use test or disposable credentials when possible.
+
+Review session.json before sharing it.
+
+Review blocks.json before AI processing.
+
+Never commit recorded sessions containing secrets to Git.
+
+Add sensitive session directories to .gitignore when appropriate.
 
 Example:
 
-```gitignore
 .env
 sessions/
 *.json
-```
 
----
+📂 Project Structure
 
-# 📂 Project Structure
-
-```text
 FlowScope/
 │
 ├── flowscope.py
@@ -387,25 +438,13 @@ FlowScope/
 │
 ├── README.md
 └── requirements.txt
-```
 
----
+🎯 Platform-Aware Recording
 
-# 🎯 Why PTY-Level Recording?
+FlowScope separates recording from the rest of the documentation pipeline.
 
-Traditional command-history tools primarily record commands such as:
+Unix-like systems
 
-```text
-$ ls
-$ cd project
-$ vim config.py
-```
-
-This loses important information about **how the terminal actually behaved**.
-
-FlowScope instead records the terminal through a pseudo-terminal:
-
-```text
 User
  │
  ▼
@@ -420,74 +459,122 @@ User
        │
        ▼
 ┌─────────────┐
-│   FlowScope │
+│  Recorder   │
 └─────────────┘
-```
 
-This allows FlowScope to capture interactive applications and reconstruct their terminal state instead of simply concatenating command output.
+The Unix recorder uses the native PTY mechanism and terminal emulation through pyte.
 
----
+Windows
 
-# 🧪 Example Use Cases
+User
+ │
+ ▼
+┌────────────────┐
+│ Windows Shell  │
+└───────┬────────┘
+        │
+        ▼
+┌────────────────┐
+│ Windows Process│
+│ / Console I/O  │
+└───────┬────────┘
+        │
+        ▼
+┌────────────────┐
+│    Recorder    │
+└────────────────┘
+
+The Windows recorder uses Windows-compatible process/console handling instead of depending on Unix-only modules such as pty, termios, and fcntl.
+
+The resulting session data is passed to the same downstream FlowScope pipeline:
+
+Recorder
+   ↓
+session.json
+   ↓
+Parser
+   ↓
+Heuristics
+   ↓
+blocks.json
+   ↓
+Markdown
+   ↓
+AI Curator
+   ↓
+PDF
+
+This allows the core documentation workflow to remain consistent across platforms.
+
+🧪 Example Use Cases
 
 FlowScope can be useful for:
 
-### 📚 Learning
+📚 Learning
 
 Record a troubleshooting or programming session and turn it into a study guide.
 
-### 🛠️ Troubleshooting
+🛠️ Troubleshooting
 
 Capture the complete process of diagnosing and fixing a system problem.
 
-### 📖 Documentation
+📖 Documentation
 
 Convert real terminal workflows into reusable technical runbooks.
 
-### 👨‍💻 Development
+👨‍💻 Development
 
 Document complex setup, deployment, or debugging procedures.
 
-### 🔍 Session Reconstruction
+🔍 Session Reconstruction
 
-Review exactly what happened during an interactive terminal session.
+Review what happened during an interactive terminal session.
 
----
+🪟 Windows Development
 
-# 🗺️ Roadmap
+Capture Windows development, debugging, configuration, and command-line workflows without requiring WSL.
+
+🗺️ Roadmap
 
 Potential future improvements include:
 
-* [ ] Better secret detection and automatic redaction
-* [ ] More robust shell/command detection
-* [ ] Additional AI providers
-* [ ] Session search and indexing
-* [ ] Web-based session viewer
-* [ ] Improved interactive application detection
-* [ ] More export formats
-* [ ] Cross-platform support where technically feasible
+Better secret detection and automatic redaction
 
----
+More robust shell/command detection
 
-# 🤝 Contributing
+Additional AI providers
+
+Session search and indexing
+
+Web-based session viewer
+
+Improved interactive application detection
+
+More export formats
+
+Further cross-platform improvements
+
+Improved Windows terminal emulation and interactive application handling
+
+🤝 Contributing
 
 Contributions, ideas, and bug reports are welcome.
 
 If you'd like to contribute:
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Make your changes.
-4. Test your changes.
-5. Open a pull request.
+Fork the repository.
 
----
+Create a feature branch.
 
-# 📄 License
+Make your changes.
+
+Test your changes on the relevant platform(s).
+
+Open a pull request.
+
+📄 License
 
 Add your project's license information here.
-
----
 
 <p align="center">
   <b>FlowScope</b><br>
