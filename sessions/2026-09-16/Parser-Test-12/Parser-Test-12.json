@@ -1,0 +1,311 @@
+{
+  "session_id": "af8e64be-8c55-4d9b-9702-91434b290e69",
+  "started_at": "2026-09-16T07:57:40.822390+00:00",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "columns": 158,
+  "title": "Parser Test 12",
+  "events": [
+    {
+      "time": "2026-09-16T07:57:41.013044+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T07:57:50.040780+00:00",
+      "type": "input",
+      "text": "echo hi\n"
+    },
+    {
+      "time": "2026-09-16T07:57:50.172736+00:00",
+      "type": "output",
+      "text": "hi"
+    },
+    {
+      "time": "2026-09-16T07:57:50.172845+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:50.178808+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T07:57:54.136887+00:00",
+      "type": "input",
+      "text": "ls\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.168841+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.168928+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.168971+00:00",
+      "type": "output",
+      "text": "    Directory: C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.169052+00:00",
+      "type": "output",
+      "text": "\r\n\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.169878+00:00",
+      "type": "output",
+      "text": "Mode                 LastWriteTime         Length Name                                                                                                       "
+    },
+    {
+      "time": "2026-09-16T07:57:54.169916+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.170372+00:00",
+      "type": "output",
+      "text": "----                 -------------         ------ ----                                                                                                       "
+    },
+    {
+      "time": "2026-09-16T07:57:54.170454+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.170957+00:00",
+      "type": "output",
+      "text": "d-----        14-09-2026     10:55                flowscope-ui                                                                                               "
+    },
+    {
+      "time": "2026-09-16T07:57:54.171034+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.172254+00:00",
+      "type": "output",
+      "text": "d-----        14-09-2026     10:51                prj                                                                                                        "
+    },
+    {
+      "time": "2026-09-16T07:57:54.172340+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.173131+00:00",
+      "type": "output",
+      "text": "d-----        16-09-2026     09:33                sessions                                                                                                   "
+    },
+    {
+      "time": "2026-09-16T07:57:54.173191+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.174134+00:00",
+      "type": "output",
+      "text": "d-----        16-09-2026     13:08                __pycache__                                                                                                "
+    },
+    {
+      "time": "2026-09-16T07:57:54.174165+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.185018+00:00",
+      "type": "output",
+      "text": "-a----        14-09-2026     12:04             66 .gitignore                                                                                                 "
+    },
+    {
+      "time": "2026-09-16T07:57:54.185064+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.186206+00:00",
+      "type": "output",
+      "text": "-a----        14-09-2026     10:48            107 .gitmodules                                                                                                "
+    },
+    {
+      "time": "2026-09-16T07:57:54.186311+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.187287+00:00",
+      "type": "output",
+      "text": "-a----        16-09-2026     12:07          32004 flowscope.py                                                                                               "
+    },
+    {
+      "time": "2026-09-16T07:57:54.187367+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.188556+00:00",
+      "type": "output",
+      "text": "-a----        16-09-2026     13:26          14043 flowscope_curator.py                                                                                       "
+    },
+    {
+      "time": "2026-09-16T07:57:54.188671+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.190055+00:00",
+      "type": "output",
+      "text": "-a----        16-09-2026     00:32           1612 flowscope_debug.py                                                                                         "
+    },
+    {
+      "time": "2026-09-16T07:57:54.190111+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.191923+00:00",
+      "type": "output",
+      "text": "-a----        16-09-2026     11:51          20602 flowscope_heuristics.py                                                                                    "
+    },
+    {
+      "time": "2026-09-16T07:57:54.191957+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.192947+00:00",
+      "type": "output",
+      "text": "-a----        14-09-2026     11:54           5403 flowscope_markdown.py                                                                                      "
+    },
+    {
+      "time": "2026-09-16T07:57:54.193002+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.194267+00:00",
+      "type": "output",
+      "text": "-a----        16-09-2026     12:47          12093 flowscope_parser.py                                                                                        "
+    },
+    {
+      "time": "2026-09-16T07:57:54.194325+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.195342+00:00",
+      "type": "output",
+      "text": "-a----        15-09-2026     12:37          14596 flowscope_pdf.py                                                                                           "
+    },
+    {
+      "time": "2026-09-16T07:57:54.195374+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.196878+00:00",
+      "type": "output",
+      "text": "-a----        14-09-2026     10:54             88 package-lock.json                                                                                          "
+    },
+    {
+      "time": "2026-09-16T07:57:54.196972+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.198907+00:00",
+      "type": "output",
+      "text": "-a----        15-09-2026     00:46          12613 README.md                                                                                                  "
+    },
+    {
+      "time": "2026-09-16T07:57:54.199027+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.200253+00:00",
+      "type": "output",
+      "text": "-a----        15-09-2026     09:56            715 requirements.txt                                                                                           "
+    },
+    {
+      "time": "2026-09-16T07:57:54.200316+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.200414+00:00",
+      "type": "output",
+      "text": "\r\n\r\n"
+    },
+    {
+      "time": "2026-09-16T07:57:54.201382+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T07:58:05.875268+00:00",
+      "type": "input",
+      "text": "git branch\n"
+    },
+    {
+      "time": "2026-09-16T07:58:05.942982+00:00",
+      "type": "output",
+      "text": "* main\n"
+    },
+    {
+      "time": "2026-09-16T07:58:05.947377+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T07:58:11.523275+00:00",
+      "type": "input",
+      "text": "git status\n"
+    },
+    {
+      "time": "2026-09-16T07:58:11.597376+00:00",
+      "type": "output",
+      "text": "On branch main\nYour branch is ahead of 'origin/main' by 1 commit.\n  (use \"git push\" to publish your local commits)\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   flowscope.py\n\tmodified:   flowscope_curator.py\n\tmodified:   flowscope_parser.py\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tsessions/2026-09-16/Parser-Test-10/\n\tsessions/2026-09-16/Parser-Test-11/\n\tsessions/2026-09-16/Parser-Test-6/\n\tsessions/2026-09-16/Parser-Test-8/\n\tsessions/2026-09-16/Parser-Test-9/\n\tsessions/2026-09-16/Test-11/\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+    },
+    {
+      "time": "2026-09-16T07:58:11.602321+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T07:58:16.547555+00:00",
+      "type": "input",
+      "text": "whoam\n"
+    },
+    {
+      "time": "2026-09-16T07:58:16.631137+00:00",
+      "type": "output",
+      "text": "whoam : The term 'whoam' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path \r\n"
+    },
+    {
+      "time": "2026-09-16T07:58:16.631215+00:00",
+      "type": "output",
+      "text": "was included, verify that the path is correct and try again.\r\nAt line:1 char:1\r\n+ whoam\r\n+ ~~~~~\r\n    + CategoryInfo          : ObjectNotFound: (whoam:String) [], CommandNotFoundException\r\n    + FullyQualifiedErrorId : CommandNotFoundException\r\n"
+    },
+    {
+      "time": "2026-09-16T07:58:16.631266+00:00",
+      "type": "output",
+      "text": " \r\n"
+    },
+    {
+      "time": "2026-09-16T07:58:16.639434+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T07:58:19.778450+00:00",
+      "type": "input",
+      "text": "exit\n"
+    }
+  ],
+  "ended_at": "2026-09-16T07:58:19.793689+00:00",
+  "duration": 38.971299
+}

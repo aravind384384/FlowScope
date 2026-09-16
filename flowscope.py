@@ -259,40 +259,373 @@ def _set_pty_size(
 # Phase 1 - Recorder
 # ---------------------------------------------------------------------------
 
-def record_session(
-    sessions_dir: Path = Path("sessions"),
-    title: str | None = None,
-) -> Path:
-    """Record an interactive terminal session.
+def _get_windows_shell() -> list[str]:
+    """Return the Windows shell command used to host the recording.
 
-    The recorder uses a real Unix PTY and stores raw input/output events.
-
-    Artifacts are organized as:
-
-        sessions_dir/
-            YYYY-MM-DD/
-                <session_name>/
-                    <session_name>.json
-                    <session_name>.blocks.json        (Phase 3)
-                    <session_name>.transcript.md       (Phase 4)
-                    <session_name>.guide.md            (Phase 5)
-                    <session_name>.guide.pdf           (Phase 6)
-
-    i.e. one self-contained folder per session, grouped under a
-    per-day folder. This keeps `sessions_dir` browsable as a session
-    library instead of a flat pile of files, and it's exactly the
-    "unlimited recursive subfolders, grouped by filename stem" layout
-    the FlowScope desktop app's folder scanner already expects -- no
-    changes needed on that side.
-
-    `session_name` is just the title's slug (e.g. "Fix Nginx Config" ->
-    "fix-nginx-config") -- no timestamp clutter. The raw title is also
-    stored in session.json. If the title can't be turned into a usable
-    slug (empty/punctuation-only), FlowScope falls back to a short
-    `session-<id>` name instead, silently. If a session with the same
-    resulting name already exists under today's folder, a numeric
-    disambiguator (`-2`, `-3`, ...) is appended so nothing overwrites.
+    Prefer PowerShell 7 when available, then Windows PowerShell, then cmd.exe.
+    The returned value is a command + arguments list suitable for Popen.
     """
+
+    if os.environ.get("COMSPEC"):
+        cmd = os.environ["COMSPEC"]
+
+    else:
+        cmd = "cmd.exe"
+
+    # PowerShell 7 is nicer for interactive use and is commonly installed.
+    for candidate in ("pwsh.exe", "powershell.exe"):
+        try:
+            import shutil
+
+            found = shutil.which(candidate)
+        except Exception:
+            found = None
+
+        if found:
+            # -NoLogo/-NoProfile reduce startup noise and make recordings cleaner.
+            return [
+                found,
+                "-NoLogo",
+                "-NoProfile",
+            ]
+
+    return [cmd]
+
+
+def _record_windows_session(
+    session: Session,
+    session_path: Path,
+    started_dt: datetime,
+) -> Path:
+    """Record a Windows shell using redirected pipes.
+
+    Windows does not expose the POSIX PTY interface used by the Unix
+    recorder.  The shell is therefore started with redirected stdin/stdout.
+
+    Important detail:
+    PowerShell/cmd echo commands that arrive through redirected stdin.
+    Those echoes are *display output*, but they are not terminal output that
+    FlowScope should record because the command is already stored as an
+    ``input`` event.  The recorder below removes only the shell's immediate
+    echo of each command from the output stream.  This prevents JSON from
+    containing:
+
+        input:  "git status\\n"
+        output: "g"
+        output: "it status\\n"
+
+    while preserving the actual command result.
+    """
+
+    import collections
+    import subprocess
+    import threading
+
+    shell_cmd = _get_windows_shell()
+    session.shell = shell_cmd[0]
+
+    creationflags = 0
+    if hasattr(subprocess, "CREATE_NEW_PROCESS_GROUP"):
+        creationflags |= subprocess.CREATE_NEW_PROCESS_GROUP
+
+    try:
+        process = subprocess.Popen(
+            shell_cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            creationflags=creationflags,
+            bufsize=0,
+        )
+    except OSError as exc:
+        raise RuntimeError(
+            f"Could not start Windows shell ({shell_cmd[0]}): {exc}"
+        ) from exc
+
+    output_decoder = codecs.getincrementaldecoder("utf-8")(
+        errors="replace"
+    )
+
+    # Commands written to the redirected shell stdin are echoed by the
+    # shell.  Keep them here so the output reader can remove that echo.
+    pending_echoes: collections.deque[str] = collections.deque()
+    echo_lock = threading.Lock()
+
+    # Text waiting to be classified as either an input echo or genuine
+    # command output.  This is necessary because one OS read may contain
+    # only "g" while the next contains "it status\\n".
+    echo_buffer = ""
+
+    def add_input_echo(text: str) -> None:
+        with echo_lock:
+            pending_echoes.append(text)
+
+    def remove_command_echo(text: str) -> str:
+        """Remove only known shell command echoes from the beginning of text."""
+
+        nonlocal echo_buffer
+
+        with echo_lock:
+            echo_buffer += text
+
+            while pending_echoes:
+                expected = pending_echoes[0]
+
+                # Shells normally echo exactly what was sent, but normalize
+                # CRLF/LF so the comparison works for both PowerShell and cmd.
+                current = echo_buffer.replace("\r\n", "\n")
+                expected_normalized = expected.replace("\r\n", "\n")
+
+                if current.startswith(expected_normalized):
+                    # If the complete echo has not arrived yet, wait for the
+                    # next read instead of leaking a partial "g" into output.
+                    if len(current) < len(expected_normalized):
+                        return ""
+
+                    echo_buffer = current[len(expected_normalized):]
+                    pending_echoes.popleft()
+                    continue
+
+                # The beginning does not match the pending command.  It is
+                # real shell output, so flush it.
+                break
+
+            # If the buffer is only a partial prefix of the pending command,
+            # hold it until the next read.
+            if pending_echoes:
+                expected = pending_echoes[0].replace("\r\n", "\n")
+                current = echo_buffer.replace("\r\n", "\n")
+
+                if expected.startswith(current):
+                    return ""
+
+            result = echo_buffer
+            echo_buffer = ""
+            return result
+
+    stop_reader = threading.Event()
+
+    def record_output(text: str) -> None:
+        if not text:
+            return
+
+        clean_text = remove_command_echo(text)
+
+        if clean_text:
+            session.events.append(
+                Event(
+                    time=datetime.now(timezone.utc).isoformat(),
+                    type="output",
+                    text=clean_text,
+                )
+            )
+
+    def read_output() -> None:
+        nonlocal echo_buffer
+        try:
+            while not stop_reader.is_set():
+                data = process.stdout.read(READ_CHUNK)  # type: ignore[union-attr]
+
+                if not data:
+                    break
+
+                # Decode once, then remove only the echoed command.
+                text = output_decoder.decode(data)
+                clean_text = remove_command_echo(text)
+
+                if clean_text:
+                    try:
+                        sys.stdout.write(clean_text)
+                        sys.stdout.flush()
+                    except (BrokenPipeError, OSError):
+                        pass
+
+                    session.events.append(
+                        Event(
+                            time=datetime.now(timezone.utc).isoformat(),
+                            type="output",
+                            text=clean_text,
+                        )
+                    )
+
+        except (OSError, ValueError):
+            pass
+
+        finally:
+            try:
+                final_text = output_decoder.decode(b"", final=True)
+
+                if final_text:
+                    clean_text = remove_command_echo(final_text)
+
+                    if clean_text:
+                        try:
+                            sys.stdout.write(clean_text)
+                            sys.stdout.flush()
+                        except (BrokenPipeError, OSError):
+                            pass
+
+                        session.events.append(
+                            Event(
+                                time=datetime.now(timezone.utc).isoformat(),
+                                type="output",
+                                text=clean_text,
+                            )
+                        )
+            except Exception:
+                pass
+
+            # Anything still in echo_buffer is genuine output only if it
+            # could not possibly complete a known command echo.  In normal
+            # operation this should be empty.
+            with echo_lock:
+                if echo_buffer and not pending_echoes:
+                    leftover = echo_buffer
+                    echo_buffer = ""
+                else:
+                    leftover = ""
+
+            if leftover:
+                try:
+                    sys.stdout.write(leftover)
+                    sys.stdout.flush()
+                except (BrokenPipeError, OSError):
+                    pass
+
+                session.events.append(
+                    Event(
+                        time=datetime.now(timezone.utc).isoformat(),
+                        type="output",
+                        text=leftover,
+                    )
+                )
+
+    reader = threading.Thread(
+        target=read_output,
+        name="flowscope-windows-output",
+        daemon=True,
+    )
+    reader.start()
+
+    console.print(
+        "[dim]FlowScope is recording this Windows shell. "
+        "Type commands normally and press Enter. "
+        "Type `exit` to stop.[/dim]"
+    )
+
+    try:
+        while process.poll() is None:
+            try:
+                line = input()
+            except EOFError:
+                break
+            except KeyboardInterrupt:
+                # Ctrl+C here belongs to the outer Python recorder.  Ask
+                # the child shell to stop without writing ^C into the JSON.
+                try:
+                    process.send_signal(subprocess.CTRL_BREAK_EVENT)
+                except (AttributeError, OSError, ValueError):
+                    try:
+                        process.terminate()
+                    except (OSError, ValueError):
+                        pass
+                break
+
+            if process.poll() is not None:
+                break
+
+            if process.stdin is None:
+                break
+
+            data = (
+                line + "\n"
+            ).encode(
+                getattr(sys.stdin, "encoding", None) or "utf-8",
+                errors="replace",
+            )
+
+            # Register the expected shell echo BEFORE writing the command.
+            add_input_echo(line + "\n")
+
+            try:
+                process.stdin.write(data)
+                process.stdin.flush()
+            except (BrokenPipeError, OSError, ValueError):
+                break
+
+            session.events.append(
+                Event(
+                    time=datetime.now(timezone.utc).isoformat(),
+                    type="input",
+                    text=line + "\n",
+                )
+            )
+
+            # `exit` should finish immediately instead of waiting for the
+            # outer recorder's cleanup timeout.
+            if line.strip().lower() in {"exit", "logout"}:
+                try:
+                    process.wait(timeout=1.5)
+                except subprocess.TimeoutExpired:
+                    pass
+                break
+
+    finally:
+        stop_reader.set()
+
+        if process.poll() is None:
+            try:
+                if process.stdin is not None:
+                    process.stdin.close()
+            except (BrokenPipeError, OSError, ValueError):
+                pass
+
+            try:
+                process.terminate()
+            except (OSError, ValueError):
+                pass
+
+        try:
+            process.wait(timeout=1.5)
+        except subprocess.TimeoutExpired:
+            try:
+                process.kill()
+            except (OSError, ValueError):
+                pass
+
+            try:
+                process.wait(timeout=1)
+            except Exception:
+                pass
+
+        reader.join(timeout=2)
+
+    ended_dt = datetime.now(timezone.utc)
+
+    session.ended_at = ended_dt.isoformat()
+    session.duration = (ended_dt - started_dt).total_seconds()
+
+    session_path.write_text(
+        json.dumps(
+            session.to_dict(),
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    return session_path
+
+
+def _record_unix_session(
+    session: Session,
+    session_path: Path,
+    shell: str,
+    rows: int,
+    cols: int,
+    started_dt: datetime,
+) -> Path:
+    """Record a Unix session using the original PTY implementation."""
 
     if (
         pty is None
@@ -300,43 +633,11 @@ def record_session(
         or fcntl is None
     ):
         raise RuntimeError(
-            "Terminal session recording requires "
-            "a Unix operating system (Linux or macOS)."
+            "Unix PTY support is unavailable. "
+            "Install/use a Unix environment such as Linux or macOS."
         )
 
-    session_id = str(uuid.uuid4())
-
-    started_dt = datetime.now(
-        timezone.utc
-    )
-
-    date_str = started_dt.strftime(
-        "%Y-%m-%d"
-    )
-
-    title = title or ""
-    slug = _slugify(title)
-
-    base_name = slug or f"session-{session_id[:8]}"
-
-    session_dir, session_name = _unique_session_dir(
-        sessions_dir / date_str, base_name
-    )
-
-    session_dir.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    session_path = session_dir / f"{session_name}.json"
-
-    shell = os.environ.get(
-        "SHELL",
-        "/bin/bash",
-    )
-
     is_tty = sys.stdin.isatty()
-
     stdin_fd = sys.stdin.fileno()
     stdout_fd = sys.stdout.fileno()
 
@@ -346,51 +647,19 @@ def record_session(
         else None
     )
 
-    rows, cols = _get_size()
-
-    session = Session(
-        session_id=session_id,
-        started_at=started_dt.isoformat(),
-        shell=shell,
-        columns=cols,
-        title=title,
-    )
-
-    # Create a real PTY and fork the shell.
     pid, master_fd = pty.fork()
 
     if pid == 0:
-        # Child process:
-        # pty.fork() attaches the slave PTY as the controlling terminal.
-
-        os.execvp(
-            shell,
-            [shell],
-        )
-
+        os.execvp(shell, [shell])
         os._exit(1)
 
-    # Parent process:
-    # relay bytes between the real terminal and the PTY master.
-
-    _set_pty_size(
-        master_fd,
-        rows,
-        cols,
-    )
+    _set_pty_size(master_fd, rows, cols)
 
     if is_tty:
-        # Put the *real* terminal into raw mode so every keystroke goes
-        # straight through to the PTY (no local line-editing/echo -- the
-        # shell inside the PTY handles that itself, exactly like a normal
-        # terminal session).
         import tty
-
         tty.setraw(stdin_fd)
 
     def _handle_winch(signum, frame) -> None:
-        """Propagate real terminal resizes to the PTY."""
-
         try:
             new_rows, new_cols = _get_size()
             _set_pty_size(master_fd, new_rows, new_cols)
@@ -398,18 +667,18 @@ def record_session(
             pass
 
     have_winch = hasattr(signal, "SIGWINCH")
-
     old_winch_handler = (
         signal.signal(signal.SIGWINCH, _handle_winch)
         if have_winch
         else None
     )
 
-    # Bytes from the PTY can split a multi-byte UTF-8 character across
-    # reads; incremental decoders keep the partial bytes around instead
-    # of corrupting/dropping the character.
-    input_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
-    output_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+    input_decoder = codecs.getincrementaldecoder("utf-8")(
+        errors="replace"
+    )
+    output_decoder = codecs.getincrementaldecoder("utf-8")(
+        errors="replace"
+    )
 
     console.print(
         "[dim]FlowScope is recording this session. "
@@ -426,7 +695,6 @@ def record_session(
                     0.25,
                 )
             except InterruptedError:
-                # Interrupted by a signal (e.g. SIGWINCH) -- just retry.
                 continue
             except OSError as exc:
                 if exc.errno == errno.EINTR:
@@ -437,21 +705,17 @@ def record_session(
                 try:
                     data = os.read(master_fd, READ_CHUNK)
                 except OSError as exc:
-                    # EIO on Linux typically means the slave side (and
-                    # thus the shell) has gone away.
                     if exc.errno == errno.EIO:
                         data = b""
                     else:
                         raise
 
                 if not data:
-                    # The shell exited; nothing left to relay.
                     break
 
                 os.write(stdout_fd, data)
 
                 text = output_decoder.decode(data)
-
                 if text:
                     session.events.append(
                         Event(
@@ -471,7 +735,6 @@ def record_session(
                     os.write(master_fd, data)
 
                     text = input_decoder.decode(data)
-
                     if text:
                         session.events.append(
                             Event(
@@ -481,8 +744,6 @@ def record_session(
                             )
                         )
 
-            # Reap the child without blocking so we notice a shell exit
-            # even if it happens to close its PTY cleanly (no EIO/EOF).
             try:
                 waited_pid, _status = os.waitpid(pid, os.WNOHANG)
             except ChildProcessError:
@@ -490,6 +751,7 @@ def record_session(
 
             if waited_pid == pid:
                 break
+
     finally:
         if have_winch and old_winch_handler is not None:
             signal.signal(signal.SIGWINCH, old_winch_handler)
@@ -512,11 +774,96 @@ def record_session(
     session.duration = (ended_dt - started_dt).total_seconds()
 
     session_path.write_text(
-        json.dumps(session.to_dict(), indent=2, ensure_ascii=False),
+        json.dumps(
+            session.to_dict(),
+            indent=2,
+            ensure_ascii=False,
+        ),
         encoding="utf-8",
     )
 
     return session_path
+
+
+def record_session(
+    sessions_dir: Path = Path("sessions"),
+    title: str | None = None,
+) -> Path:
+    """Record an interactive terminal session on Windows, Linux, or macOS.
+
+    Windows uses a subprocess pipe recorder because POSIX PTYs are not
+    available there.  Unix systems continue to use the original PTY path.
+
+    All platforms write the same session.json structure, so the parser,
+    heuristics, Markdown export, AI curator, and PDF export remain unchanged.
+    """
+
+    session_id = str(uuid.uuid4())
+
+    started_dt = datetime.now(timezone.utc)
+
+    date_str = started_dt.strftime("%Y-%m-%d")
+
+    title = title or ""
+    slug = _slugify(title)
+
+    base_name = slug or f"session-{session_id[:8]}"
+
+    session_dir, session_name = _unique_session_dir(
+        sessions_dir / date_str,
+        base_name,
+    )
+
+    session_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    session_path = session_dir / f"{session_name}.json"
+
+    rows, cols = _get_size()
+
+    # On Windows, do not use $SHELL, /bin/bash, pty, termios, or fcntl.
+    if sys.platform == "win32":
+        shell_cmd = _get_windows_shell()
+        shell_name = shell_cmd[0]
+
+        session = Session(
+            session_id=session_id,
+            started_at=started_dt.isoformat(),
+            shell=shell_name,
+            columns=cols,
+            title=title,
+        )
+
+        return _record_windows_session(
+            session=session,
+            session_path=session_path,
+            started_dt=started_dt,
+        )
+
+    # Linux/macOS: preserve the PTY implementation.
+    shell = os.environ.get(
+        "SHELL",
+        "/bin/bash",
+    )
+
+    session = Session(
+        session_id=session_id,
+        started_at=started_dt.isoformat(),
+        shell=shell,
+        columns=cols,
+        title=title,
+    )
+
+    return _record_unix_session(
+        session=session,
+        session_path=session_path,
+        shell=shell,
+        rows=rows,
+        cols=cols,
+        started_dt=started_dt,
+    )
 
 
 # ---------------------------------------------------------------------------

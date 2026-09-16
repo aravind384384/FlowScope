@@ -53,63 +53,40 @@ You receive a structured JSON representation of a recorded terminal
 session. The JSON contains session metadata and command blocks reconstructed
 by FlowScope's deterministic parsing and heuristic stages.
 
-Your job is NOT to reproduce the raw transcript.
-
-Your job is to transform the recorded work into a clean, minimal,
-step-by-step technical guide that explains the successful procedure.
+Your job is to transform the recorded session into a clean, step-by-step
+technical guide that documents every command that was executed.
 
 IMPORTANT PRINCIPLES:
 
 1. IDENTIFY THE CORE GOAL
 
    Determine what the user was actually trying to accomplish in the
-   terminal session.
+   terminal session. The guide should be framed around that goal.
 
-   The final guide should focus on that goal rather than reproducing
-   everything the user typed.
+2. PRESERVE EVERY COMMAND
 
-2. REMOVE NOISE
+   Include ALL commands from the session without exception.
 
-   Omit commands that are not necessary for accomplishing the core goal,
-   including when appropriate:
+   Do not omit any command regardless of how simple, obvious, or
+   redundant it may appear. Every command the user ran is intentional
+   and must appear in the guide.
 
-   - ls
-   - pwd
-   - whoami
-   - clear
-   - directory navigation used only for inspection
-   - repeated inspection commands
-   - accidental commands
-   - obvious typos
-   - failed attempts
-   - redundant commands
-   - commands unrelated to the final successful procedure
+   This includes but is not limited to:
+   - ls, pwd, whoami, clear
+   - directory navigation
+   - inspection commands
+   - repeated commands
+   - failed attempts (document them as troubleshooting steps)
 
-   Do NOT remove a command merely because it looks simple. Keep it if it
-   is required for the procedure.
+3. HANDLE FAILED ATTEMPTS
 
-3. HANDLE FAILED ATTEMPTS CAREFULLY
+   Do not omit failed attempts. Document them as-is.
 
-   Prefer the successful procedure.
+   If a command failed, include it and note the failure and its outcome.
 
-   Failed attempts should normally be omitted.
+4. CLASSIFY STEPS
 
-   However, if a failure reveals an important prerequisite, configuration
-   requirement, or troubleshooting step that is necessary to understand
-   the final solution, you may mention it briefly.
-
-4. PRESERVE ACTUAL COMMANDS
-
-   Do not invent commands that were not present in the session unless
-   absolutely necessary to make the guide understandable.
-
-   Prefer commands that actually appeared in the recorded session.
-
-   Do not silently replace a recorded command with a different command.
-
-5. CLASSIFY STEPS
-
-   Assign each retained step one of these categories:
+   Assign each step one of these categories:
 
    - SETUP
    - DEPENDENCY
@@ -119,36 +96,29 @@ IMPORTANT PRINCIPLES:
    - VERIFICATION
    - CLEANUP
 
-6. EXPLAIN EACH STEP
+5. EXPLAIN EACH STEP
 
-   For every retained command, provide a concise explanation of:
+   For every command, provide a concise explanation of:
 
    - what the command does
-   - why the step is necessary
+   - why the step was performed
 
    Do not write long explanations for simple commands.
 
-7. EXPECTED OUTPUT
+6. EXPECTED OUTPUT
 
-   Include expected output only when it is useful for confirming that
-   the step succeeded.
+   Include the actual output from the session where available.
 
-   Do not reproduce large amounts of terminal output.
+   Do not reproduce excessively long output — truncate with "..." if
+   needed, but always show the beginning and the key result lines.
 
-8. DO NOT CONFUSE THE TRANSCRIPT WITH THE GUIDE
+7. DO NOT MODIFY THE SOURCE DATA
 
-   The recorded session is evidence of what happened.
+   The input JSON is historical session data. Treat it as read-only.
 
-   The final guide should represent the useful procedure extracted from
-   that session.
+   Do not invent or substitute commands that were not in the session.
 
-9. DO NOT MODIFY THE SOURCE DATA
-
-   The input JSON is historical session data.
-
-   Treat it as read-only.
-
-10. OUTPUT FORMAT
+8. OUTPUT FORMAT
 
    Return ONLY Markdown.
 
@@ -168,24 +138,38 @@ IMPORTANT PRINCIPLES:
 
    ## Step 1: <Step Title> [CATEGORY]
 
-   <Concise explanation of what the step does and why it is needed.>
+   <Concise explanation of what the step does and why it was performed.>
 
-   ```bash
+```bash
    <command>
-````
+```
 
-   <Optional concise expected result if useful.>
+   <Actual output if available and useful.>
 
-## Step 2: <Step Title> [CATEGORY]
+   ## Step 2: <Step Title> [CATEGORY]
 
-...
+   ...
 
-## Result
+   ## Result
 
-   <Brief description of the final successful result.>
+   <Brief description of the final outcome of the session.>
 
 Do not include analysis, commentary, JSON, or explanations outside the
 Markdown guide.
+"""
+
+# ---------------------------------------------------------------------------
+# Custom prompt behavior
+# ---------------------------------------------------------------------------
+
+CUSTOM_PROMPT_RULE = """
+When a USER-CUSTOM-PROMPT is supplied, treat it as the user's specific
+instruction for this curation run.
+
+Follow the custom prompt while still treating the recorded session data
+as the source of truth. Never invent commands, output, errors, or results.
+If the custom prompt conflicts with the recorded session data, the recorded
+session data takes precedence.
 """
 
 # ---------------------------------------------------------------------------
@@ -377,8 +361,14 @@ def _load_input(input_path: Path) -> str:
 def build_prompt(
     blocks_json: str,
     focus: str | None = None,
+    custom_prompt: str | None = None,
 ) -> str:
-    """Build the complete Gemini prompt."""
+    """Build the complete Gemini prompt.
+
+    `focus` is a short hint about the objective.
+    `custom_prompt` is a full user-supplied instruction for this run.
+    The recorded session data remains the source of truth.
+    """
 
     prompt_parts = [
         SYSTEM_PROMPT,
@@ -395,6 +385,18 @@ def build_prompt(
                 "USER-SPECIFIED FOCUS:",
                 "",
                 focus,
+            ]
+        )
+
+    if custom_prompt:
+        prompt_parts.extend(
+            [
+                "",
+                CUSTOM_PROMPT_RULE.strip(),
+                "",
+                "USER-CUSTOM-PROMPT:",
+                "",
+                custom_prompt,
             ]
         )
 
@@ -418,6 +420,7 @@ def curate_guide(
     api_key: str | None = None,
     model: str = "gemini-2.5-flash",
     focus: str | None = None,
+    custom_prompt: str | None = None,
 ) -> str:
     """Generate a curated Markdown guide from blocks.json."""
 
@@ -426,6 +429,7 @@ def curate_guide(
     prompt = build_prompt(
         blocks_json=blocks_json,
         focus=focus,
+        custom_prompt=custom_prompt,
     )
 
     return _call_gemini_api(
@@ -441,6 +445,7 @@ def curate_file(
     api_key: str | None = None,
     model: str = "gemini-2.5-flash",
     focus: str | None = None,
+    custom_prompt: str | None = None,
 ) -> str:
     """Curate blocks.json and optionally write the guide to disk."""
 
@@ -449,6 +454,7 @@ def curate_file(
         api_key=api_key,
         model=model,
         focus=focus,
+        custom_prompt=custom_prompt,
     )
 
     if out_path:
@@ -507,6 +513,15 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "--prompt",
+        "-p",
+        dest="custom_prompt",
+        help=(
+            "Custom instruction to send to Gemini for this curation run"
+        ),
+    )
+
+    parser.add_argument(
         "--api-key",
         "-k",
         help=(
@@ -524,6 +539,7 @@ def main() -> None:
             api_key=args.api_key,
             model=args.model,
             focus=args.focus,
+            custom_prompt=args.custom_prompt,
         )
 
         if args.out:

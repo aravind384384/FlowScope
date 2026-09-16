@@ -1,0 +1,71 @@
+{
+  "session_id": "4f086977-ea9c-4d04-b2e3-9d13d32b6a67",
+  "started_at": "2026-09-16T06:38:10.288439+00:00",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "columns": 158,
+  "title": "Parser Test 9",
+  "events": [
+    {
+      "time": "2026-09-16T06:38:10.506559+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T06:38:25.375099+00:00",
+      "type": "input",
+      "text": "git branch\n"
+    },
+    {
+      "time": "2026-09-16T06:38:25.439429+00:00",
+      "type": "output",
+      "text": "* main\n"
+    },
+    {
+      "time": "2026-09-16T06:38:25.448156+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T06:38:31.789800+00:00",
+      "type": "input",
+      "text": "git status\n"
+    },
+    {
+      "time": "2026-09-16T06:38:31.856030+00:00",
+      "type": "output",
+      "text": "On branch main\nYour branch is ahead of 'origin/main' by 1 commit.\n  (use \"git push\" to publish your local commits)\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   flowscope.py\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tsessions/2026-09-16/Parser-Test-6/\n\tsessions/2026-09-16/Parser-Test-8/\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+    },
+    {
+      "time": "2026-09-16T06:38:31.860652+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T06:38:36.474056+00:00",
+      "type": "input",
+      "text": "echo hi\n"
+    },
+    {
+      "time": "2026-09-16T06:38:36.521507+00:00",
+      "type": "output",
+      "text": "hi"
+    },
+    {
+      "time": "2026-09-16T06:38:36.521560+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T06:38:36.522133+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T06:38:45.873686+00:00",
+      "type": "input",
+      "text": "exit\n"
+    }
+  ],
+  "ended_at": "2026-09-16T06:38:45.893475+00:00",
+  "duration": 35.605036
+}

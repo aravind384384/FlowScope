@@ -141,55 +141,98 @@ def _parse_windows_pipe_session(
 ) -> ParsedSession:
     """Parse a Windows pipe session.
 
-    The Windows Recorder stores user input separately from shell output.
-    We use the input event as the authoritative command and ignore the
-    shell's duplicate echo of that command.
+    Windows recording stores keyboard input separately from shell output.
+    Unlike a PTY recording, the shell does NOT need to echo the command
+    back for the parser to reconstruct it.
+
+    The input event is therefore authoritative:
+
+        output: "PS C:\\FlowScope> "
+        input:  "echo hi\\n"
+        output: "hi"
+        output: "\\r\\n"
+        output: "PS C:\\FlowScope> "
+
+    becomes:
+
+        "PS C:\\FlowScope> echo hi"
+        "hi"
+        "PS C:\\FlowScope>"
+
+    This is important because Windows pipe output may arrive without the
+    typed command echo, and output chunks can be split arbitrarily.
     """
 
     events = data.get("events", [])
 
     lines: list[ParsedLine] = []
 
+    # Text currently being assembled from output events. This is normally
+    # the shell prompt. It is deliberately NOT mixed with user input.
     buffer = ""
 
-    waiting_for_echo = None
+    # Timestamp of the most recent event that finalized a parsed line.
+    # Used for assigning the timestamp of a prompt/output line.
+    last_output_time = data.get("started_at", "")
 
     for event in events:
-
         event_type = event.get("type")
+        timestamp = event.get(
+            "time",
+            data.get("ended_at", ""),
+        )
 
         # ---------------------------------------------------------------
         # USER INPUT
         # ---------------------------------------------------------------
-
+        #
+        # The recorder already has the exact command typed by the user.
+        # Create the command line directly. Do not append it to the
+        # output buffer and do not wait for a shell echo.
+        #
+        # Example:
+        #
+        # buffer = "PS C:\\FlowScope> "
+        # input  = "git branch\n"
+        #
+        # becomes one ParsedLine:
+        #
+        # "PS C:\\FlowScope> git branch"
+        #
+        # The buffer is then cleared so the following "* main" becomes
+        # output instead of "git branch* main".
+        #
         if event_type == "input":
+            command = str(event.get("text", ""))
 
-            command = str(
-                event.get("text", "")
-            ).rstrip("\r\n")
+            # Normalize only the line ending on the user's command.
+            command = command.replace("\r\n", "\n").replace("\r", "\n")
+            command = command.rstrip("\n")
 
             if not command:
                 continue
 
-            waiting_for_echo = command
+            # A prompt may already be present in the output buffer.
+            # Preserve it exactly apart from trailing whitespace cleanup.
+            prefix = buffer.rstrip()
 
-            # The prompt is already sitting in the buffer.
-            #
-            # Example:
-            #
-            # buffer = "PS C:\\FlowScope> "
-            # command = "git status"
-            #
-            # becomes:
-            #
-            # "PS C:\\FlowScope> git status"
-
-            if buffer:
-                buffer += command
-
+            if prefix:
+                command_line = f"{prefix} {command}"
             else:
-                buffer = command
+                command_line = command
 
+            lines.append(
+                ParsedLine(
+                    index=len(lines),
+                    text=command_line.rstrip(),
+                    timestamp=timestamp,
+                )
+            )
+
+            # The command is now finalized. Any subsequent output belongs
+            # to this command until the next input event.
+            buffer = ""
+            last_output_time = timestamp
             continue
 
         # ---------------------------------------------------------------
@@ -199,79 +242,18 @@ def _parse_windows_pipe_session(
         if event_type != "output":
             continue
 
-        text = str(
-            event.get("text", "")
-        )
+        text_chunk = str(event.get("text", ""))
 
-        if not text:
+        if not text_chunk:
             continue
 
-        text = _normalize_windows_output(text)
+        text_chunk = _normalize_windows_output(text_chunk)
+        last_output_time = timestamp
 
-        timestamp = event.get(
-            "time",
-            data.get("ended_at", ""),
-        )
-
-        i = 0
-
-        while i < len(text):
-
-            # -----------------------------------------------------------
-            # If the shell is echoing the command we just typed,
-            # consume exactly that echo.
-            # -----------------------------------------------------------
-
-            if waiting_for_echo:
-
-                remaining = text[i:]
-
-                if remaining.startswith(
-                    waiting_for_echo
-                ):
-
-                    i += len(
-                        waiting_for_echo
-                    )
-
-                    waiting_for_echo = None
-
-                    continue
-
-                # Echo may be split across multiple output events.
-                #
-                # Example:
-                #
-                # event 1 -> "g"
-                # event 2 -> "it status\n"
-                #
-                # If the current output is only a prefix of the command,
-                # consume it and wait for the next event.
-
-                if waiting_for_echo.startswith(
-                    remaining
-                ):
-
-                    waiting_for_echo = (
-                        waiting_for_echo[
-                            len(remaining):
-                        ]
-                    )
-
-                    i = len(text)
-
-                    continue
-
-                waiting_for_echo = None
-
-            char = text[i]
-
-            # -----------------------------------------------------------
-            # New line
-            # -----------------------------------------------------------
-
+        for char in text_chunk:
             if char == "\n":
-
+                # A CRLF has already become LF. Empty lines are real output
+                # when they occur between other output, so preserve them.
                 lines.append(
                     ParsedLine(
                         index=len(lines),
@@ -279,75 +261,43 @@ def _parse_windows_pipe_session(
                         timestamp=timestamp,
                     )
                 )
-
                 buffer = ""
 
-            # -----------------------------------------------------------
-            # Backspace
-            # -----------------------------------------------------------
-
             elif char == "\b":
-
                 if buffer:
                     buffer = buffer[:-1]
 
             else:
-
                 buffer += char
 
-            i += 1
-
-    # ---------------------------------------------------------------
-    # Preserve final unfinished line.
-    # ---------------------------------------------------------------
-
+    # Preserve the final unfinished line, e.g. a prompt emitted just before
+    # the shell exits without another newline.
     if buffer.strip():
-
         lines.append(
             ParsedLine(
                 index=len(lines),
                 text=buffer.rstrip(),
-                timestamp=data.get(
-                    "ended_at",
-                    "",
-                ),
+                timestamp=last_output_time or data.get("ended_at", ""),
             )
         )
 
-    # Remove trailing blank lines.
-
+    # The final empty line is usually just a newline/display artifact.
     while lines and not lines[-1].text:
         lines.pop()
-
-    # Re-index.
 
     for index, line in enumerate(lines):
         line.index = index
 
     return ParsedSession(
-        session_id=data.get(
-            "session_id",
-            "",
-        ),
-        shell=data.get(
-            "shell",
-            "",
-        ),
-        started_at=data.get(
-            "started_at",
-            "",
-        ),
-        ended_at=data.get(
-            "ended_at",
-            "",
-        ),
-        duration=data.get(
-            "duration",
-            0.0,
-        ),
+        session_id=data.get("session_id", ""),
+        shell=data.get("shell", ""),
+        started_at=data.get("started_at", ""),
+        ended_at=data.get("ended_at", ""),
+        duration=data.get("duration", 0.0),
         columns=columns,
         lines=lines,
     )
+
 # ---------------------------------------------------------------------------
 # Unix PTY parser
 # ---------------------------------------------------------------------------

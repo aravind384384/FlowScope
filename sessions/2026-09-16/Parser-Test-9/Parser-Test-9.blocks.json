@@ -1,0 +1,73 @@
+{
+  "session_id": "4f086977-ea9c-4d04-b2e3-9d13d32b6a67",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "started_at": "2026-09-16T06:38:10.288439+00:00",
+  "ended_at": "2026-09-16T06:38:45.893475+00:00",
+  "duration": 35.605036,
+  "columns": 158,
+  "blocks": [
+    {
+      "line_index": 0,
+      "prompt": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope>",
+      "command": "git branch* main",
+      "output": [],
+      "started_at": "2026-09-16T06:38:25.439429+00:00",
+      "ended_at": "2026-09-16T06:38:25.439429+00:00",
+      "block_type": "command",
+      "interactive_program": null,
+      "interactive_trigger": null,
+      "raw_output": null
+    },
+    {
+      "line_index": 1,
+      "prompt": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope>",
+      "command": "git statusOn branch main",
+      "output": [
+        "Your branch is ahead of 'origin/main' by 1 commit.",
+        "  (use \"git push\" to publish your local commits)",
+        "",
+        "Changes not staged for commit:",
+        "  (use \"git add <file>...\" to update what will be committed)",
+        "  (use \"git restore <file>...\" to discard changes in working directory)",
+        "\tmodified:   flowscope.py",
+        "",
+        "Untracked files:",
+        "  (use \"git add <file>...\" to include in what will be committed)",
+        "\tsessions/2026-09-16/Parser-Test-6/",
+        "\tsessions/2026-09-16/Parser-Test-8/",
+        "",
+        "no changes added to commit (use \"git add\" and/or \"git commit -a\")"
+      ],
+      "started_at": "2026-09-16T06:38:31.856030+00:00",
+      "ended_at": "2026-09-16T06:38:31.856030+00:00",
+      "block_type": "command",
+      "interactive_program": null,
+      "interactive_trigger": null,
+      "raw_output": null
+    },
+    {
+      "line_index": 16,
+      "prompt": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope>",
+      "command": "echo hihi",
+      "output": [],
+      "started_at": "2026-09-16T06:38:36.521560+00:00",
+      "ended_at": "2026-09-16T06:38:36.521560+00:00",
+      "block_type": "command",
+      "interactive_program": null,
+      "interactive_trigger": null,
+      "raw_output": null
+    },
+    {
+      "line_index": 17,
+      "prompt": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope>",
+      "command": "exit",
+      "output": [],
+      "started_at": "2026-09-16T06:38:45.893475+00:00",
+      "ended_at": "2026-09-16T06:38:45.893475+00:00",
+      "block_type": "command",
+      "interactive_program": null,
+      "interactive_trigger": null,
+      "raw_output": null
+    }
+  ]
+}
