@@ -1,0 +1,1116 @@
+{
+  "session_id": "dff43cf6-1da3-4c41-8e0b-94d31955be75",
+  "started_at": "2026-09-15T19:04:16.639793+00:00",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "columns": 158,
+  "title": "Debug test",
+  "events": [
+    {
+      "time": "2026-09-15T19:04:16.702910+00:00",
+      "type": "input",
+      "text": "\u001b"
+    },
+    {
+      "time": "2026-09-15T19:04:16.703317+00:00",
+      "type": "input",
+      "text": "["
+    },
+    {
+      "time": "2026-09-15T19:04:16.703449+00:00",
+      "type": "input",
+      "text": "?"
+    },
+    {
+      "time": "2026-09-15T19:04:16.703542+00:00",
+      "type": "input",
+      "text": "6"
+    },
+    {
+      "time": "2026-09-15T19:04:16.703645+00:00",
+      "type": "input",
+      "text": "1"
+    },
+    {
+      "time": "2026-09-15T19:04:16.703750+00:00",
+      "type": "input",
+      "text": ";"
+    },
+    {
+      "time": "2026-09-15T19:04:16.703871+00:00",
+      "type": "input",
+      "text": "4"
+    },
+    {
+      "time": "2026-09-15T19:04:16.703993+00:00",
+      "type": "input",
+      "text": "c"
+    },
+    {
+      "time": "2026-09-15T19:04:19.760568+00:00",
+      "type": "output",
+      "text": "Windows PowerShell\r\nCopyright (C) Microsoft Corporation. All rights reserved."
+    },
+    {
+      "time": "2026-09-15T19:04:19.761819+00:00",
+      "type": "output",
+      "text": "\r\n\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:19.873520+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:19.944649+00:00",
+      "type": "output",
+      "text": "> "
+    },
+    {
+      "time": "2026-09-15T19:04:19.946273+00:00",
+      "type": "output",
+      "text": "["
+    },
+    {
+      "time": "2026-09-15T19:04:19.950843+00:00",
+      "type": "output",
+      "text": "[?"
+    },
+    {
+      "time": "2026-09-15T19:04:19.955377+00:00",
+      "type": "output",
+      "text": "[?6"
+    },
+    {
+      "time": "2026-09-15T19:04:19.960136+00:00",
+      "type": "output",
+      "text": "[?61"
+    },
+    {
+      "time": "2026-09-15T19:04:19.964699+00:00",
+      "type": "output",
+      "text": "[?61;"
+    },
+    {
+      "time": "2026-09-15T19:04:19.969173+00:00",
+      "type": "output",
+      "text": "[?61;4"
+    },
+    {
+      "time": "2026-09-15T19:04:19.973674+00:00",
+      "type": "output",
+      "text": "[?61;4c"
+    },
+    {
+      "time": "2026-09-15T19:04:51.050554+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.057318+00:00",
+      "type": "output",
+      "text": "[?61;4c"
+    },
+    {
+      "time": "2026-09-15T19:04:51.060504+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.065346+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.067230+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.585493+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.590384+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.593508+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.595638+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.614162+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.625889+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.630156+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.631707+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.648204+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.655256+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.657593+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.658744+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.679034+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.682610+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.685732+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.687657+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.712256+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.716772+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.720254+00:00",
+      "type": "output",
+      "text": "\r\nPS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.744497+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.749677+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.754973+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.756648+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.774626+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.783472+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.785918+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.787459+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.806531+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.829577+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.834121+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.835818+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.840371+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.845668+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.849405+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.851001+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.874529+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.882707+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.887813+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.889495+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.907638+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.914757+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.917765+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.919444+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.937797+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.941976+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.946556+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.947745+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:51.970518+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:51.976332+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:51.981476+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:51.983203+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.002376+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.009644+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:52.014669+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:52.016444+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.041262+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.044696+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:52.049866+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:52.051671+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.072090+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.079529+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:52.083252+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:52.084880+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.240015+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.244316+00:00",
+      "type": "output",
+      "text": "^C\r\nPS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.412869+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.419767+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:52.423864+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:52.424619+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.566023+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.568438+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:52.573849+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:52.575310+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.720254+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:52.729682+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:52.735605+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:52.737839+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:52.998526+00:00",
+      "type": "input",
+      "text": "\u0003"
+    },
+    {
+      "time": "2026-09-15T19:04:53.002617+00:00",
+      "type": "output",
+      "text": "^C"
+    },
+    {
+      "time": "2026-09-15T19:04:53.007580+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:53.008948+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:04:55.033249+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.033675+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.034039+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.034981+00:00",
+      "type": "input",
+      "text": "c"
+    },
+    {
+      "time": "2026-09-15T19:04:55.035499+00:00",
+      "type": "input",
+      "text": "a"
+    },
+    {
+      "time": "2026-09-15T19:04:55.035834+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:04:55.036273+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.036333+00:00",
+      "type": "output",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.036521+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.036756+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:04:55.037045+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.037203+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.037414+00:00",
+      "type": "input",
+      "text": "i"
+    },
+    {
+      "time": "2026-09-15T19:04:55.037834+00:00",
+      "type": "input",
+      "text": "o"
+    },
+    {
+      "time": "2026-09-15T19:04:55.037962+00:00",
+      "type": "input",
+      "text": "n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.038041+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.038215+00:00",
+      "type": "input",
+      "text": "/"
+    },
+    {
+      "time": "2026-09-15T19:04:55.038487+00:00",
+      "type": "input",
+      "text": "Y"
+    },
+    {
+      "time": "2026-09-15T19:04:55.038698+00:00",
+      "type": "input",
+      "text": "Y"
+    },
+    {
+      "time": "2026-09-15T19:04:55.038932+00:00",
+      "type": "input",
+      "text": "Y"
+    },
+    {
+      "time": "2026-09-15T19:04:55.039308+00:00",
+      "type": "input",
+      "text": "Y"
+    },
+    {
+      "time": "2026-09-15T19:04:55.039592+00:00",
+      "type": "input",
+      "text": "-"
+    },
+    {
+      "time": "2026-09-15T19:04:55.039977+00:00",
+      "type": "input",
+      "text": "M"
+    },
+    {
+      "time": "2026-09-15T19:04:55.040207+00:00",
+      "type": "input",
+      "text": "M"
+    },
+    {
+      "time": "2026-09-15T19:04:55.040424+00:00",
+      "type": "input",
+      "text": "-"
+    },
+    {
+      "time": "2026-09-15T19:04:55.040592+00:00",
+      "type": "input",
+      "text": "D"
+    },
+    {
+      "time": "2026-09-15T19:04:55.040974+00:00",
+      "type": "input",
+      "text": "D"
+    },
+    {
+      "time": "2026-09-15T19:04:55.041882+00:00",
+      "type": "input",
+      "text": "/"
+    },
+    {
+      "time": "2026-09-15T19:04:55.042071+00:00",
+      "type": "input",
+      "text": "D"
+    },
+    {
+      "time": "2026-09-15T19:04:55.042375+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:04:55.042483+00:00",
+      "type": "input",
+      "text": "b"
+    },
+    {
+      "time": "2026-09-15T19:04:55.042594+00:00",
+      "type": "input",
+      "text": "u"
+    },
+    {
+      "time": "2026-09-15T19:04:55.042722+00:00",
+      "type": "input",
+      "text": "g"
+    },
+    {
+      "time": "2026-09-15T19:04:55.042944+00:00",
+      "type": "input",
+      "text": "-"
+    },
+    {
+      "time": "2026-09-15T19:04:55.043117+00:00",
+      "type": "input",
+      "text": "T"
+    },
+    {
+      "time": "2026-09-15T19:04:55.043934+00:00",
+      "type": "output",
+      "text": "  "
+    },
+    {
+      "time": "2026-09-15T19:04:55.044001+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:04:55.044128+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.044327+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:04:55.044526+00:00",
+      "type": "input",
+      "text": "/"
+    },
+    {
+      "time": "2026-09-15T19:04:55.044672+00:00",
+      "type": "input",
+      "text": "D"
+    },
+    {
+      "time": "2026-09-15T19:04:55.044831+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:04:55.044947+00:00",
+      "type": "input",
+      "text": "b"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045070+00:00",
+      "type": "input",
+      "text": "u"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045175+00:00",
+      "type": "input",
+      "text": "g"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045321+00:00",
+      "type": "input",
+      "text": "-"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045453+00:00",
+      "type": "input",
+      "text": "T"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045542+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045620+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045696+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:04:55.045854+00:00",
+      "type": "input",
+      "text": "."
+    },
+    {
+      "time": "2026-09-15T19:04:55.046020+00:00",
+      "type": "input",
+      "text": "j"
+    },
+    {
+      "time": "2026-09-15T19:04:55.046119+00:00",
+      "type": "input",
+      "text": "s"
+    },
+    {
+      "time": "2026-09-15T19:04:55.046311+00:00",
+      "type": "input",
+      "text": "o"
+    },
+    {
+      "time": "2026-09-15T19:04:55.046409+00:00",
+      "type": "input",
+      "text": "n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.046538+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.046637+00:00",
+      "type": "input",
+      "text": "|"
+    },
+    {
+      "time": "2026-09-15T19:04:55.046779+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.046910+00:00",
+      "type": "input",
+      "text": "g"
+    },
+    {
+      "time": "2026-09-15T19:04:55.046991+00:00",
+      "type": "input",
+      "text": "r"
+    },
+    {
+      "time": "2026-09-15T19:04:55.047066+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:04:55.047145+00:00",
+      "type": "input",
+      "text": "p"
+    },
+    {
+      "time": "2026-09-15T19:04:55.047251+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.047345+00:00",
+      "type": "input",
+      "text": "-"
+    },
+    {
+      "time": "2026-09-15T19:04:55.047468+00:00",
+      "type": "input",
+      "text": "A"
+    },
+    {
+      "time": "2026-09-15T19:04:55.047718+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.047807+00:00",
+      "type": "input",
+      "text": "5"
+    },
+    {
+      "time": "2026-09-15T19:04:55.047936+00:00",
+      "type": "input",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:04:55.048035+00:00",
+      "type": "input",
+      "text": "\""
+    },
+    {
+      "time": "2026-09-15T19:04:55.048123+00:00",
+      "type": "input",
+      "text": "o"
+    },
+    {
+      "time": "2026-09-15T19:04:55.048201+00:00",
+      "type": "input",
+      "text": "u"
+    },
+    {
+      "time": "2026-09-15T19:04:55.048352+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:04:55.048459+00:00",
+      "type": "input",
+      "text": "p"
+    },
+    {
+      "time": "2026-09-15T19:04:55.048656+00:00",
+      "type": "input",
+      "text": "u"
+    },
+    {
+      "time": "2026-09-15T19:04:55.048753+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:04:55.048844+00:00",
+      "type": "input",
+      "text": "\""
+    },
+    {
+      "time": "2026-09-15T19:04:55.050675+00:00",
+      "type": "output",
+      "text": "   "
+    },
+    {
+      "time": "2026-09-15T19:04:55.058349+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY"
+    },
+    {
+      "time": "2026-09-15T19:04:55.067922+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A "
+    },
+    {
+      "time": "2026-09-15T19:04:55.074329+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5"
+    },
+    {
+      "time": "2026-09-15T19:04:55.079563+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 "
+    },
+    {
+      "time": "2026-09-15T19:04:55.084155+00:00",
+      "type": "output",
+      "text": ">    cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \""
+    },
+    {
+      "time": "2026-09-15T19:04:55.088769+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"o"
+    },
+    {
+      "time": "2026-09-15T19:04:55.095121+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"ou"
+    },
+    {
+      "time": "2026-09-15T19:04:55.100604+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"out"
+    },
+    {
+      "time": "2026-09-15T19:04:55.104966+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"outp"
+    },
+    {
+      "time": "2026-09-15T19:04:55.111416+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"outpu"
+    },
+    {
+      "time": "2026-09-15T19:04:55.117748+00:00",
+      "type": "output",
+      "text": "   cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"output"
+    },
+    {
+      "time": "2026-09-15T19:04:55.126831+00:00",
+      "type": "output",
+      "text": ">    cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"output\""
+    },
+    {
+      "time": "2026-09-15T19:04:55.805986+00:00",
+      "type": "input",
+      "text": "\r"
+    },
+    {
+      "time": "2026-09-15T19:04:55.808877+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.942676+00:00",
+      "type": "output",
+      "text": "grep : The term 'grep' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path "
+    },
+    {
+      "time": "2026-09-15T19:04:55.944329+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.947448+00:00",
+      "type": "output",
+      "text": "was included, verify that the path is correct and try again."
+    },
+    {
+      "time": "2026-09-15T19:04:55.949131+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.952026+00:00",
+      "type": "output",
+      "text": "At line:1 char:57"
+    },
+    {
+      "time": "2026-09-15T19:04:55.953564+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.955459+00:00",
+      "type": "output",
+      "text": "+    cat sessions/YYYY-MM-DD/Debug-Test/Debug-Test.json | grep -A 5 \"ou ..."
+    },
+    {
+      "time": "2026-09-15T19:04:55.957227+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.961736+00:00",
+      "type": "output",
+      "text": "+                                                         ~~~~\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.964665+00:00",
+      "type": "output",
+      "text": "    + CategoryInfo          : ObjectNotFound: (grep:String) [], CommandNotFoundException"
+    },
+    {
+      "time": "2026-09-15T19:04:55.966124+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.967774+00:00",
+      "type": "output",
+      "text": "    + FullyQualifiedErrorId : CommandNotFoundException"
+    },
+    {
+      "time": "2026-09-15T19:04:55.969139+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.970774+00:00",
+      "type": "output",
+      "text": " \r\n"
+    },
+    {
+      "time": "2026-09-15T19:04:55.972948+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:05:07.734028+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:05:07.736514+00:00",
+      "type": "output",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:05:07.958387+00:00",
+      "type": "input",
+      "text": "x"
+    },
+    {
+      "time": "2026-09-15T19:05:07.963547+00:00",
+      "type": "output",
+      "text": "ex"
+    },
+    {
+      "time": "2026-09-15T19:05:08.179897+00:00",
+      "type": "input",
+      "text": "i"
+    },
+    {
+      "time": "2026-09-15T19:05:08.182359+00:00",
+      "type": "output",
+      "text": "exi"
+    },
+    {
+      "time": "2026-09-15T19:05:08.498543+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:05:08.502836+00:00",
+      "type": "output",
+      "text": "exit"
+    },
+    {
+      "time": "2026-09-15T19:05:08.729459+00:00",
+      "type": "input",
+      "text": "\r"
+    },
+    {
+      "time": "2026-09-15T19:05:08.731827+00:00",
+      "type": "output",
+      "text": "\r\n"
+    }
+  ],
+  "ended_at": "2026-09-15T19:05:13.972982+00:00",
+  "duration": 57.333189
+}

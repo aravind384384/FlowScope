@@ -1,0 +1,271 @@
+{
+  "session_id": "25143871-bfd9-4363-b663-128e9cda81dc",
+  "started_at": "2026-09-15T19:12:07.439917+00:00",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "columns": 158,
+  "title": "clean test",
+  "events": [
+    {
+      "time": "2026-09-15T19:12:07.480705+00:00",
+      "type": "input",
+      "text": "["
+    },
+    {
+      "time": "2026-09-15T19:12:07.480948+00:00",
+      "type": "input",
+      "text": "?"
+    },
+    {
+      "time": "2026-09-15T19:12:07.481494+00:00",
+      "type": "input",
+      "text": "6"
+    },
+    {
+      "time": "2026-09-15T19:12:07.481620+00:00",
+      "type": "input",
+      "text": "1"
+    },
+    {
+      "time": "2026-09-15T19:12:07.481769+00:00",
+      "type": "input",
+      "text": ";"
+    },
+    {
+      "time": "2026-09-15T19:12:07.481892+00:00",
+      "type": "input",
+      "text": "4"
+    },
+    {
+      "time": "2026-09-15T19:12:07.482000+00:00",
+      "type": "input",
+      "text": "c"
+    },
+    {
+      "time": "2026-09-15T19:12:10.548018+00:00",
+      "type": "output",
+      "text": "Windows PowerShell\r\nCopyright (C) Microsoft Corporation. All rights reserved."
+    },
+    {
+      "time": "2026-09-15T19:12:10.549787+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:12:10.551416+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:12:10.663922+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:12:10.739617+00:00",
+      "type": "output",
+      "text": "> "
+    },
+    {
+      "time": "2026-09-15T19:12:10.741272+00:00",
+      "type": "output",
+      "text": "["
+    },
+    {
+      "time": "2026-09-15T19:12:10.745919+00:00",
+      "type": "output",
+      "text": "[?"
+    },
+    {
+      "time": "2026-09-15T19:12:10.750704+00:00",
+      "type": "output",
+      "text": "[?6"
+    },
+    {
+      "time": "2026-09-15T19:12:10.755764+00:00",
+      "type": "output",
+      "text": "[?61"
+    },
+    {
+      "time": "2026-09-15T19:12:10.760906+00:00",
+      "type": "output",
+      "text": "[?61;"
+    },
+    {
+      "time": "2026-09-15T19:12:10.765367+00:00",
+      "type": "output",
+      "text": "[?61;4"
+    },
+    {
+      "time": "2026-09-15T19:12:10.770481+00:00",
+      "type": "output",
+      "text": "[?61;4c"
+    },
+    {
+      "time": "2026-09-15T19:21:34.920309+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:21:34.924801+00:00",
+      "type": "output",
+      "text": "[?61;4ce"
+    },
+    {
+      "time": "2026-09-15T19:21:35.079726+00:00",
+      "type": "input",
+      "text": "x"
+    },
+    {
+      "time": "2026-09-15T19:21:35.083415+00:00",
+      "type": "output",
+      "text": "[?61;4cex"
+    },
+    {
+      "time": "2026-09-15T19:21:36.036604+00:00",
+      "type": "input",
+      "text": "i"
+    },
+    {
+      "time": "2026-09-15T19:21:36.041402+00:00",
+      "type": "output",
+      "text": "[?61;4cexi"
+    },
+    {
+      "time": "2026-09-15T19:21:36.356917+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:21:36.360160+00:00",
+      "type": "output",
+      "text": "[?61;4cexit"
+    },
+    {
+      "time": "2026-09-15T19:21:36.616358+00:00",
+      "type": "input",
+      "text": "\r"
+    },
+    {
+      "time": "2026-09-15T19:21:36.624530+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.692220+00:00",
+      "type": "output",
+      "text": "At line:1 char:2\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.695574+00:00",
+      "type": "output",
+      "text": "+ [?61;4cexit"
+    },
+    {
+      "time": "2026-09-15T19:21:36.697233+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.700583+00:00",
+      "type": "output",
+      "text": "+  ~"
+    },
+    {
+      "time": "2026-09-15T19:21:36.702283+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.705608+00:00",
+      "type": "output",
+      "text": "Missing type name after '['."
+    },
+    {
+      "time": "2026-09-15T19:21:36.707606+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.710450+00:00",
+      "type": "output",
+      "text": "    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.713569+00:00",
+      "type": "output",
+      "text": "    + FullyQualifiedErrorId : MissingTypename"
+    },
+    {
+      "time": "2026-09-15T19:21:36.715499+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.719883+00:00",
+      "type": "output",
+      "text": " "
+    },
+    {
+      "time": "2026-09-15T19:21:36.721649+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-15T19:21:36.723463+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-15T19:21:37.869411+00:00",
+      "type": "input",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:21:37.871815+00:00",
+      "type": "output",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-15T19:21:38.211326+00:00",
+      "type": "input",
+      "text": "x"
+    },
+    {
+      "time": "2026-09-15T19:21:38.216608+00:00",
+      "type": "output",
+      "text": "ex"
+    },
+    {
+      "time": "2026-09-15T19:21:38.462389+00:00",
+      "type": "input",
+      "text": "i"
+    },
+    {
+      "time": "2026-09-15T19:21:38.465726+00:00",
+      "type": "output",
+      "text": "exi"
+    },
+    {
+      "time": "2026-09-15T19:21:38.751318+00:00",
+      "type": "input",
+      "text": "t"
+    },
+    {
+      "time": "2026-09-15T19:21:38.754398+00:00",
+      "type": "output",
+      "text": "exit"
+    },
+    {
+      "time": "2026-09-15T19:21:39.581594+00:00",
+      "type": "input",
+      "text": "\r"
+    },
+    {
+      "time": "2026-09-15T19:21:39.584061+00:00",
+      "type": "output",
+      "text": "\r\n"
+    }
+  ],
+  "ended_at": "2026-09-15T19:21:44.815897+00:00",
+  "duration": 577.37598
+}

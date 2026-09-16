@@ -1,0 +1,121 @@
+{
+  "session_id": "77af6a37-6733-43f7-8b53-41846e7d7195",
+  "started_at": "2026-09-16T04:38:11.267346+00:00",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "columns": 158,
+  "title": "Last check",
+  "events": [
+    {
+      "time": "2026-09-16T04:38:11.345186+00:00",
+      "type": "output",
+      "text": "Windows PowerShell\r\nCopyright (C) Microsoft Corporation. All rights reserved."
+    },
+    {
+      "time": "2026-09-16T04:38:11.345234+00:00",
+      "type": "output",
+      "text": "\r\n\r\n"
+    },
+    {
+      "time": "2026-09-16T04:38:11.445603+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T04:38:29.670937+00:00",
+      "type": "input",
+      "text": "git branch\n"
+    },
+    {
+      "time": "2026-09-16T04:38:29.671091+00:00",
+      "type": "output",
+      "text": "g"
+    },
+    {
+      "time": "2026-09-16T04:38:29.671153+00:00",
+      "type": "output",
+      "text": "it branch\n"
+    },
+    {
+      "time": "2026-09-16T04:38:29.733930+00:00",
+      "type": "output",
+      "text": "* main\n"
+    },
+    {
+      "time": "2026-09-16T04:38:29.743720+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T04:38:40.635730+00:00",
+      "type": "input",
+      "text": "git status\n"
+    },
+    {
+      "time": "2026-09-16T04:38:40.635946+00:00",
+      "type": "output",
+      "text": "g"
+    },
+    {
+      "time": "2026-09-16T04:38:40.636045+00:00",
+      "type": "output",
+      "text": "it status\n"
+    },
+    {
+      "time": "2026-09-16T04:38:40.707303+00:00",
+      "type": "output",
+      "text": "On branch main\nYour branch is up to date with 'origin/main'.\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   flowscope.py\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tflowscope_debug.py\n\tsessions/2026-09-15/Debug-test/\n\tsessions/2026-09-15/My-Session/\n\tsessions/2026-09-15/clean-test/\n\tsessions/2026-09-16/\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")\n"
+    },
+    {
+      "time": "2026-09-16T04:38:40.711719+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T04:38:59.034960+00:00",
+      "type": "input",
+      "text": "echo ho\n"
+    },
+    {
+      "time": "2026-09-16T04:38:59.035157+00:00",
+      "type": "output",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-16T04:38:59.035217+00:00",
+      "type": "output",
+      "text": "cho ho\n"
+    },
+    {
+      "time": "2026-09-16T04:38:59.082145+00:00",
+      "type": "output",
+      "text": "ho"
+    },
+    {
+      "time": "2026-09-16T04:38:59.082272+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T04:38:59.082625+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T04:39:03.112262+00:00",
+      "type": "input",
+      "text": "exit\n"
+    },
+    {
+      "time": "2026-09-16T04:39:03.112426+00:00",
+      "type": "output",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-16T04:39:03.112479+00:00",
+      "type": "output",
+      "text": "xit\n"
+    }
+  ],
+  "ended_at": "2026-09-16T04:39:03.263120+00:00",
+  "duration": 51.995774
+}

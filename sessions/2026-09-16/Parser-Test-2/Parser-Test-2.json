@@ -1,0 +1,71 @@
+{
+  "session_id": "06364cba-8286-4b26-b5a3-e93ce6650ddb",
+  "started_at": "2026-09-16T05:07:23.516620+00:00",
+  "shell": "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "columns": 158,
+  "title": "Parser Test 2",
+  "events": [
+    {
+      "time": "2026-09-16T05:07:23.615255+00:00",
+      "type": "output",
+      "text": "Windows PowerShell\r\nCopyright (C) Microsoft Corporation. All rights reserved."
+    },
+    {
+      "time": "2026-09-16T05:07:23.615382+00:00",
+      "type": "output",
+      "text": "\r\n\r\n"
+    },
+    {
+      "time": "2026-09-16T05:07:23.728780+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T05:07:28.145039+00:00",
+      "type": "input",
+      "text": "echo hi\n"
+    },
+    {
+      "time": "2026-09-16T05:07:28.145274+00:00",
+      "type": "output",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-16T05:07:28.145362+00:00",
+      "type": "output",
+      "text": "cho hi\n"
+    },
+    {
+      "time": "2026-09-16T05:07:28.197285+00:00",
+      "type": "output",
+      "text": "hi"
+    },
+    {
+      "time": "2026-09-16T05:07:28.197410+00:00",
+      "type": "output",
+      "text": "\r\n"
+    },
+    {
+      "time": "2026-09-16T05:07:28.201791+00:00",
+      "type": "output",
+      "text": "PS C:\\Users\\gvnar\\OneDrive\\Desktop\\FlowScope> "
+    },
+    {
+      "time": "2026-09-16T05:07:41.492302+00:00",
+      "type": "input",
+      "text": "exit\n"
+    },
+    {
+      "time": "2026-09-16T05:07:41.492568+00:00",
+      "type": "output",
+      "text": "e"
+    },
+    {
+      "time": "2026-09-16T05:07:41.492701+00:00",
+      "type": "output",
+      "text": "xit\n"
+    }
+  ],
+  "ended_at": "2026-09-16T05:07:41.642784+00:00",
+  "duration": 18.126164
+}
